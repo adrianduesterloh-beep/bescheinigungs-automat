@@ -1,0 +1,8 @@
+# Beim Installieren über den Cloudflare-Link werden diese zwei Werte abgefragt.
+
+# Passwort für die Bedienoberfläche.
+ADMIN_PASSWORT="hier-ein-eigenes-passwort"
+
+# Verschlüsselt Ablefy-Zugangsdaten und Mail-Token im Speicher.
+# Einmal setzen und nie wieder ändern.
+DATEN_SCHLUESSEL="hier-ein-langes-zufallswort-mindestens-30-zeichen"
