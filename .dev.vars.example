@@ -1,8 +1,10 @@
-# Beim Installieren über den Cloudflare-Link werden diese zwei Werte abgefragt.
+# Diese zwei Werte fragt Cloudflare bei der Installation über den Link ab.
+# Die Felder sind absichtlich leer — dort die eigenen Werte eintragen.
 
 # Passwort für die Bedienoberfläche.
-ADMIN_PASSWORT="hier-ein-eigenes-passwort"
+ADMIN_PASSWORT=""
 
 # Verschlüsselt Ablefy-Zugangsdaten und Mail-Token im Speicher.
+# Ein langes, ausgedachtes Wort, mindestens 30 Zeichen.
 # Einmal setzen und nie wieder ändern.
-DATEN_SCHLUESSEL="hier-ein-langes-zufallswort-mindestens-30-zeichen"
+DATEN_SCHLUESSEL=""
