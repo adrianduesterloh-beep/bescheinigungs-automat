@@ -1,0 +1,1462 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teilnahmebescheinigungen</title>
+<style>
+:root{
+  --grund:#f7f7f5; --karte:#ffffff; --rand:#e3e2dd; --randStark:#cfcec8;
+  --text:#1f1e1b; --leise:#6b6a63; --akzent:#2f6f4e; --akzentText:#ffffff;
+  --warn:#8a5a00; --warnGrund:#fdf6e3; --fehler:#a13a2a; --fehlerGrund:#fbeeeb;
+  --gut:#2f6f4e; --gutGrund:#eef5f0;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --grund:#191917; --karte:#232320; --rand:#35342f; --randStark:#4a4942;
+    --text:#eceae4; --leise:#a3a199; --akzent:#6fbf90; --akzentText:#12261b;
+    --warn:#e0b45c; --warnGrund:#2e2718; --fehler:#e8897a; --fehlerGrund:#2e1d1a;
+    --gut:#6fbf90; --gutGrund:#1b2b21;
+  }
+}
+:root[data-theme="dark"]{
+  --grund:#191917; --karte:#232320; --rand:#35342f; --randStark:#4a4942;
+  --text:#eceae4; --leise:#a3a199; --akzent:#6fbf90; --akzentText:#12261b;
+  --warn:#e0b45c; --warnGrund:#2e2718; --fehler:#e8897a; --fehlerGrund:#2e1d1a;
+  --gut:#6fbf90; --gutGrund:#1b2b21;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--grund);color:var(--text);
+  font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.huelle{max-width:860px;margin:0 auto;padding:20px 18px 40px}
+h1{font-size:1.5rem;margin:0 0 4px;letter-spacing:-.01em}
+h2{font-size:1.12rem;margin:0 0 10px;letter-spacing:-.01em}
+h3{font-size:.95rem;margin:0 0 6px}
+p{margin:0 0 12px}
+a{color:var(--akzent)}
+ol,ul{margin:0 0 12px;padding-left:22px}
+li{margin:0 0 5px}
+.leise{color:var(--leise);font-size:.9rem}
+.karte{background:var(--karte);border:1px solid var(--rand);border-radius:12px;
+  padding:18px;margin:0 0 14px}
+.kopf{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin:0 0 18px;flex-wrap:wrap}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 18px}
+nav button{background:none;border:1px solid transparent;color:var(--leise);
+  padding:7px 12px;border-radius:8px;cursor:pointer;font-size:.92rem}
+nav button:hover{background:var(--grund)}
+nav button[aria-current="true"]{background:var(--karte);border-color:var(--rand);color:var(--text);font-weight:600}
+label{display:block;font-weight:600;font-size:.88rem;margin:14px 0 5px}
+label .zusatz{font-weight:400;color:var(--leise)}
+input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--randStark);
+  border-radius:8px;background:var(--karte);color:var(--text);font:inherit;font-size:.95rem}
+textarea{min-height:150px;resize:vertical;line-height:1.5}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--akzent);outline-offset:1px;border-color:var(--akzent)}
+.knopf{display:inline-flex;align-items:center;gap:7px;background:var(--akzent);
+  color:var(--akzentText);border:0;border-radius:8px;padding:10px 16px;
+  font:inherit;font-weight:600;font-size:.93rem;cursor:pointer;text-decoration:none}
+.knopf:disabled{opacity:.5;cursor:default}
+.knopf.leiser{background:transparent;color:var(--text);border:1px solid var(--randStark)}
+.knopf.gefahr{background:transparent;color:var(--fehler);border:1px solid var(--fehler)}
+.knopf.link{background:none;border:0;color:var(--leise);padding:10px 4px;font-weight:400;text-decoration:underline}
+.reihe{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.zwei{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+@media(max-width:620px){.zwei{grid-template-columns:1fr}}
+.schritte{list-style:none;padding:0;margin:0}
+.schritte li{display:flex;gap:12px;align-items:flex-start;padding:12px 0;
+  border-bottom:1px solid var(--rand)}
+.schritte li:last-child{border-bottom:0}
+.haken{flex:0 0 26px;height:26px;border-radius:50%;display:grid;place-items:center;
+  font-size:.85rem;font-weight:700;background:var(--grund);color:var(--leise);
+  border:1px solid var(--randStark)}
+.haken.fertig{background:var(--gutGrund);color:var(--gut);border-color:var(--gut)}
+.marke{display:inline-block;font-size:.76rem;font-weight:700;padding:3px 9px;
+  border-radius:999px;letter-spacing:.02em}
+.m-gut{background:var(--gutGrund);color:var(--gut)}
+.m-warn{background:var(--warnGrund);color:var(--warn)}
+.m-fehler{background:var(--fehlerGrund);color:var(--fehler)}
+.m-still{background:var(--grund);color:var(--leise)}
+.hinweis{border-left:3px solid var(--randStark);padding:2px 0 2px 14px;margin:12px 0;
+  color:var(--leise);font-size:.9rem}
+.hinweis.warn{border-color:var(--warn);color:var(--warn)}
+.hinweis.fehler{border-color:var(--fehler);color:var(--fehler)}
+.hinweis.gut{border-color:var(--gut);color:var(--gut)}
+.liste{border:1px solid var(--rand);border-radius:10px;overflow:hidden}
+.zeile{display:flex;gap:12px;align-items:center;justify-content:space-between;
+  padding:12px 14px;border-bottom:1px solid var(--rand);flex-wrap:wrap}
+.zeile:last-child{border-bottom:0}
+.zeile .haupt{font-weight:600}
+code{background:var(--grund);border:1px solid var(--rand);border-radius:5px;
+  padding:1px 6px;font-size:.85em;word-break:break-all}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th{text-align:left;color:var(--leise);font-weight:600;padding:6px 8px 6px 0;
+  border-bottom:1px solid var(--rand)}
+td{padding:7px 8px 7px 0;border-bottom:1px solid var(--rand);vertical-align:top}
+.mitte{max-width:400px;margin:14vh auto;padding:0 18px}
+.pdfrahmen{width:100%;height:520px;border:1px solid var(--randStark);border-radius:8px;background:#fff}
+.klapp{border:1px solid var(--rand);border-radius:10px;margin:0 0 12px;background:var(--karte)}
+.klapp>summary{cursor:pointer;padding:14px 16px;font-weight:600;display:flex;
+  gap:10px;align-items:center;justify-content:space-between;list-style:none}
+.klapp>summary::-webkit-details-marker{display:none}
+.klapp[open]>summary{border-bottom:1px solid var(--rand)}
+.klappinhalt{padding:4px 16px 18px}
+.demoband{background:var(--warnGrund);color:var(--warn);padding:9px 14px;
+  border-radius:8px;font-size:.88rem;margin:0 0 16px;border:1px solid var(--warn)}
+.cb{display:flex;gap:10px;align-items:flex-start;font-weight:400;margin-top:12px;cursor:pointer}
+.cb input{width:auto;margin-top:5px}
+.fuss{color:var(--leise);font-size:.8rem;text-align:center;padding:24px 0 0;border-top:1px solid var(--rand);margin-top:30px}
+/* Assistent */
+.fortschritt{display:flex;gap:4px;margin:0 0 18px}
+.fortschritt span{flex:1;height:5px;border-radius:3px;background:var(--rand)}
+.fortschritt span.erledigt{background:var(--gut)}
+.fortschritt span.aktuell{background:var(--akzent);opacity:.55}
+.anleitung{background:var(--grund);border:1px solid var(--rand);border-radius:10px;padding:14px 18px;margin:14px 0}
+.anleitung ol{margin:6px 0 0}
+.anleitung li{margin:0 0 7px}
+.assistentfuss{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:22px;padding-top:16px;border-top:1px solid var(--rand)}
+.assistentfuss>div{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+kbd{font:inherit;font-size:.86em;background:var(--grund);border:1px solid var(--randStark);border-radius:5px;padding:0 6px}
+</style>
+</head>
+<body>
+<div class="huelle" id="wurzel"></div>
+
+<script>
+/* ================================================================
+   Bedienoberfläche.
+   Eine Datei, kein Framework. Alles läuft über /api/… gegen den Worker.
+   DEMO = true schaltet auf Beispieldaten um, dann wird nichts gesendet.
+   ================================================================ */
+const DEMO = false;
+
+let stand = null;
+let seite = 'start';
+let offenerKurs = null;
+let meldung = null;
+/** Anzeigename eines Kurses: ZPP-Titel, sonst Ablefy-Produkt, sonst „Neuer Kurs“. */
+const kursName = (k) => k.titel || k.produktName || 'Neuer Kurs';
+let aSchritt = 0;          // aktueller Schritt im Assistenten
+let probeVorschau = {};    // letzte Probelauf-Vorschau je Kurs, bleibt beim Neuzeichnen stehen
+
+const $ = (s, w = document) => w.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const zeitDe = (iso) => {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d)) return '—';
+  return d.toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit',
+    hour: '2-digit', minute: '2-digit' });
+};
+const herKurz = (iso) => {
+  if (!iso) return 'noch nie';
+  const min = Math.round((Date.now() - new Date(iso)) / 60000);
+  if (min < 1) return 'gerade eben';
+  if (min < 60) return `vor ${min} Min.`;
+  if (min < 48 * 60) return `vor ${Math.round(min / 60)} Std.`;
+  return `vor ${Math.round(min / 1440)} Tagen`;
+};
+
+/* ---------------- Verbindung zum Worker ---------------- */
+
+async function api(pfad, daten) {
+  if (DEMO) return demoApi(pfad, daten);
+  const opt = daten
+    ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(daten) }
+    : {};
+  const res = await fetch('/api/' + pfad, opt);
+  const antwort = await res.json().catch(() => ({ fehler: 'Unerwartete Antwort vom Server.' }));
+  if (res.status === 401 && pfad !== 'login') { stand = null; zeichne(); throw new Error('abgemeldet'); }
+  if (!res.ok) throw new Error(antwort.fehler || 'Es hat nicht geklappt.');
+  return antwort;
+}
+
+async function ladeStand() {
+  stand = await api('uebersicht');
+  const e = stand.einstellungen || {};
+  aSchritt = Number(e.assistentSchritt || 0);
+}
+
+/** Nach Anmeldung oder Neuladen: unfertige Einrichtung öffnet den Assistenten. */
+function startseite() {
+  seite = stand && !stand.einstellungen?.assistentFertig ? 'assistent' : 'start';
+}
+
+async function mitLaden(knopf, fn) {
+  const alt = knopf ? knopf.textContent : null;
+  if (knopf) { knopf.disabled = true; knopf.textContent = 'Einen Moment …'; }
+  try { await fn(); }
+  catch (e) { if (e.message !== 'abgemeldet') meldung = { text: e.message, art: 'fehler' }; }
+  finally { if (knopf) { knopf.disabled = false; knopf.textContent = alt; } zeichne(); }
+}
+
+/* ---------------- Anmeldung ---------------- */
+
+function zeichneLogin() {
+  return `<div class="mitte">
+    <h1>Teilnahmebescheinigungen</h1>
+    <p class="leise">Passwort aus der Installation — oder das später unter „Einstellungen“ gesetzte.</p>
+    <div class="karte">
+      ${meldungHtml()}
+      <label for="pw">Passwort</label>
+      <input id="pw" type="password" autocomplete="current-password" autofocus>
+      <div class="reihe"><button class="knopf" data-tu="login">Anmelden</button></div>
+    </div>
+    <p class="leise">Passwort vergessen: Im Cloudflare-Konto den Eintrag <code>auth:passwort</code> im KV-Speicher löschen, dann gilt wieder das Passwort aus der Installation. Genau beschrieben in <code>TECHNIK.md</code>.</p>
+  </div>`;
+}
+
+/* ================================================================
+   Assistent — geführte Einrichtung
+   ================================================================ */
+
+const SCHRITTE = [
+  { id: 'willkommen', titel: 'Willkommen' },
+  { id: 'mail',       titel: 'Mailversand' },
+  { id: 'absender',   titel: 'Absender' },
+  { id: 'ablefy',     titel: 'Ablefy verbinden' },
+  { id: 'kurs',       titel: 'Kurs und Abschlussquiz' },
+  { id: 'zpp',        titel: 'Angaben aus dem ZPP-Bescheid' },
+  { id: 'text',       titel: 'Die Mail an die Teilnehmer' },
+  { id: 'probelauf',  titel: 'Probelauf' },
+  { id: 'freigabe',   titel: 'Freigabe' },
+  { id: 'fertig',     titel: 'Fertig' },
+];
+
+/** Der Kurs, der im Assistenten gerade eingerichtet wird. */
+function aKurs() {
+  const id = stand.einstellungen?.assistentKurs;
+  return stand.kurse.find((k) => k.id === id) || null;
+}
+
+/** Ist ein Schritt nach Datenlage erledigt? */
+function schrittErledigt(id) {
+  const m = stand.mail, k = aKurs();
+  switch (id) {
+    case 'willkommen': return true;
+    case 'mail': return stand.schritte.mail;
+    case 'absender': return m.anbieter === 'hostinger' || Boolean(m.absenderMail);
+    case 'ablefy': return stand.konten.length > 0;
+    case 'kurs': return Boolean(k && k.produktId && k.quizze && k.quizze.length);
+    case 'zpp': return Boolean(k && k.titel && k.zppKursId && k.praeventionsprinzip && k.anbieterName && k.anbieterAdresse && k.ort && (k.hatUnterschrift || k.unterschriftName));
+    case 'text': return Boolean(k && k.betreff && (m.anbieter === 'hostinger' || k.absender?.absenderMail));
+    case 'probelauf': return Boolean(k && k.letzterProbelauf);
+    case 'freigabe': return Boolean(k && k.aktiv);
+    case 'fertig': return true;
+  }
+  return false;
+}
+
+async function merkeSchritt(n, kursId) {
+  aSchritt = n;
+  const daten = { schritt: n };
+  if (kursId !== undefined) daten.kursId = kursId;
+  await api('einstellungen/assistent', daten);
+}
+
+function zeichneAssistent() {
+  aSchritt = Math.max(0, Math.min(aSchritt, SCHRITTE.length - 1));
+  const s = SCHRITTE[aSchritt];
+  const balken = SCHRITTE.slice(1, -1).map((x, i) => {
+    const n = i + 1;
+    return `<span class="${n < aSchritt || (n === aSchritt && schrittErledigt(x.id)) ? 'erledigt' : n === aSchritt ? 'aktuell' : ''}" title="${esc(x.titel)}"></span>`;
+  }).join('');
+  const inhalt = ASSISTENT[s.id]();
+  const erledigt = schrittErledigt(s.id);
+
+  const fuss = s.id === 'willkommen' ? `<div class="assistentfuss"><div></div><div>
+      <button class="knopf" data-a="weiter">Einrichtung starten</button></div></div>`
+    : s.id === 'fertig' ? ''
+    : `<div class="assistentfuss">
+      <div><button class="knopf leiser" data-a="zurueck">Zurück</button>
+        <button class="knopf link" data-a="pause">Später weitermachen</button></div>
+      <div>${erledigt ? '<span class="marke m-gut">erledigt</span> ' : ''}${inhalt.pruefen
+        ? `<button class="knopf${erledigt && inhalt.weiterZusaetzlich ? ' leiser' : ''}" data-a="pruefen">${esc(erledigt ? (inhalt.knopfErledigt || 'Speichern und weiter') : (inhalt.knopf || 'Speichern und weiter'))}</button>`
+        : '<button class="knopf" data-a="weiter">Weiter</button>'}${erledigt && inhalt.weiterZusaetzlich ? ' <button class="knopf" data-a="weiter">Weiter</button>' : ''}</div>
+    </div>`;
+
+  return `<div class="kopf">
+      <div><h1>Einrichtung</h1><span class="leise">${aSchritt === 0 ? 'Schritt für Schritt bis zur ersten Bescheinigung' : `Schritt ${aSchritt} von ${SCHRITTE.length - 2}: ${esc(s.titel)}`}</span></div>
+      <button class="knopf leiser" data-tu="logout">Abmelden</button>
+    </div>
+    ${DEMO ? '<div class="demoband">Vorführung mit Beispieldaten. Nichts hiervon wird gespeichert oder verschickt.</div>' : ''}
+    <div class="fortschritt">${balken}</div>
+    ${meldungHtml()}
+    <div class="karte">
+      <h2>${esc(s.titel)}</h2>
+      ${inhalt.html}
+      ${fuss}
+    </div>
+    ${fussHtml()}`;
+}
+
+/* Jeder Schritt: html, optional knopf-Beschriftung, und pruefen() — speichert
+   das Formular und liefert true, wenn es weitergehen darf. */
+const ASSISTENT = {
+  willkommen: () => ({ html: `
+    <p>Besteht ein Teilnehmer das Abschlussquiz deines Kurses, füllt dieses Programm die Teilnahmebescheinigung für die Krankenkasse aus und schickt sie ihm per Mail — automatisch, ohne dass du etwas tust.</p>
+    <p>Die Einrichtung hat acht Schritte und dauert etwa eine Stunde. Zwei Schritte haben Wartezeit, die nicht an dir liegt: die Freischaltung deiner Absenderdomain (Minuten bis Stunden) und ein Testkauf im eigenen Kurs.</p>
+    <div class="anleitung"><strong>Das brauchst du</strong>
+      <ol>
+        <li>Deinen Login bei <strong>myablefy.com</strong></li>
+        <li>Zugang zur <strong>DNS-Verwaltung deiner Domain</strong> — beim Anbieter, bei dem du die Domain gekauft hast</li>
+        <li>Aus dem <strong>ZPP-Anbieterportal</strong>, vom eingetragenen <em>Kurs</em> (nicht vom Konzept): Titel der Maßnahme, Kurs-ID, Präventionsprinzip, Anbietername, Anschrift</li>
+        <li>Eine <strong>Unterschrift</strong> als PNG mit durchsichtigem Hintergrund — oder den Namen der Person, die unterschreiben darf</li>
+      </ol></div>
+    <p class="leise">Du kannst jederzeit unterbrechen. Beim nächsten Anmelden geht es an derselben Stelle weiter.</p>` }),
+
+  mail: () => {
+    const m = stand.mail;
+    return { knopf: 'Speichern und Testmail schicken', knopfErledigt: 'Weiter', html: `
+    <p>Die Bescheinigungen werden über einen Mail-Versanddienst verschickt. Empfohlen ist <strong>Resend</strong> — kostenlos bis 3.000 Mails im Monat. Du brauchst dort ein Konto, eine freigeschaltete Absenderdomain und einen API-Schlüssel.</p>
+    <details class="klapp" ${m.hatToken ? '' : 'open'}><summary>Resend einrichten und Schlüssel holen — Klick für Klick</summary>
+    <div class="klappinhalt">
+      <ol>
+        <li>Auf <strong>resend.com</strong> ein Konto anlegen und die Bestätigungsmail anklicken.</li>
+        <li>Links <strong>Domains</strong> → <strong>Add Domain</strong>. Deine Absenderdomain eintragen, zum Beispiel <code>deine-firma.de</code>. Region <em>Europe</em>.</li>
+        <li>Resend zeigt drei DNS-Einträge (MX, SPF, DKIM). Jeden davon bei deinem Domainanbieter unter „DNS“ oder „DNS-Einträge“ anlegen — Typ, Name und Wert genau übernehmen. Hängt der Anbieter deine Domain an den Namen automatisch an, nur den vorderen Teil eintragen (<code>send</code> statt <code>send.deine-firma.de</code>).</li>
+        <li>Bei Resend auf <strong>Verify</strong>. Stehen alle drei Einträge auf grün, ist die Domain freigeschaltet. Das dauert Minuten, manchmal Stunden — solange „Später weitermachen“.</li>
+        <li>Links <strong>API Keys</strong> → <strong>Create API Key</strong>, Permission <em>Sending access</em>. Den Schlüssel sofort kopieren: Resend zeigt ihn nur dieses eine Mal.</li>
+      </ol>
+      <p class="leise">Ausführlich, mit Sonderfällen: <code>MAILVERSAND-EINRICHTEN.md</code> im Paket.</p>
+    </div></details>
+
+    <label for="anbieter">Versanddienst</label>
+    <select id="anbieter">
+      <option value="resend" ${m.anbieter !== 'hostinger' ? 'selected' : ''}>Resend (empfohlen)</option>
+      <option value="hostinger" ${m.anbieter === 'hostinger' ? 'selected' : ''}>Hostinger Postfach</option>
+    </select>
+    <label for="token">API-Schlüssel <span class="zusatz">${m.hatToken ? 'gespeichert — nur ausfüllen, um ihn zu ersetzen' : 'beginnt mit re_'}</span></label>
+    <input id="token" type="password" autocomplete="off" placeholder="${m.hatToken ? '••••••••••••' : 're_…'}">
+    <div id="hostingerfeld" style="display:${m.anbieter === 'hostinger' ? 'block' : 'none'}">
+      <label for="mailboxid">Postfach-Kennung bei Hostinger</label>
+      <input id="mailboxid" value="${esc(m.mailboxId)}" placeholder="aus GET /api/v1/me">
+    </div>
+    <label for="warnan">Deine E-Mail-Adresse <span class="zusatz">empfängt die Testmail und später jede Störungsmeldung</span></label>
+    <input id="warnan" type="email" value="${esc(m.warnAn)}" placeholder="du@deine-firma.de">
+    ${m.absenderMail ? '' : `<label for="absmail">Absenderadresse <span class="zusatz">auf der Domain, die du bei Resend freigeschaltet hast</span></label>
+    <input id="absmail" type="email" placeholder="bescheinigung@deine-firma.de">`}
+    ${m.geprueft ? `<div class="hinweis gut">Testmail erfolgreich verschickt am ${zeitDe(m.geprueft)}.</div>`
+      : '<div class="hinweis">„Speichern und Testmail schicken“ speichert die Angaben und schickt sofort eine Testmail an deine Adresse. Kommt sie nicht an: Spamordner prüfen, dann bei Resend, ob die Domain auf grün steht.</div>'}`,
+    pruefen: async () => {
+      const daten = {
+        anbieter: $('#anbieter').value, token: $('#token').value || undefined,
+        mailboxId: $('#mailboxid') ? $('#mailboxid').value : '', warnAn: $('#warnan').value,
+      };
+      if ($('#absmail')) daten.absenderMail = $('#absmail').value;
+      const neuTesten = !stand.schritte.mail || Boolean(daten.token) || daten.anbieter !== stand.mail.anbieter;
+      await api('mail/speichern', daten);
+      if (neuTesten) {
+        const r = await api('mail/test', { an: $('#warnan').value });
+        meldung = { text: 'Testmail an ' + r.an + ' verschickt.', art: 'ok' };
+      }
+      await ladeStand();
+      return stand.schritte.mail;
+    } };
+  },
+
+  absender: () => {
+    const m = stand.mail;
+    return { html: `
+    <p>Von wem sollen die Bescheinigungen kommen? Im Postfach des Teilnehmers steht zuerst der <strong>Absendername</strong> — er sollte der Name sein, unter dem der Kurs verkauft wird.</p>
+    <div class="zwei">
+      <div><label for="absname">Absendername</label><input id="absname" value="${esc(m.absenderName)}" placeholder="Praxis Sonnenweg"></div>
+      <div><label for="absmail">Absenderadresse <span class="zusatz">Domain muss beim Versanddienst freigeschaltet sein</span></label><input id="absmail" type="email" value="${esc(m.absenderMail)}" placeholder="bescheinigung@deine-firma.de"></div>
+    </div>
+    <label for="antwortan">Antwortadresse <span class="zusatz">wohin Rückfragen der Teilnehmer gehen · leer = Absenderadresse</span></label>
+    <input id="antwortan" type="email" value="${esc(m.antwortAn)}" placeholder="hallo@deine-firma.de">
+    <label class="cb"><input type="checkbox" id="cbstandard" ${m.standardFuerKurse || !stand.kurse.length ? 'checked' : ''}>
+      <span><strong>Für alle Kurse verwenden</strong><br>
+      <span class="leise">Kurse übernehmen diese Angaben automatisch. Einzelne Kurse können auf ihrer Kursseite abweichen.</span></span></label>
+    <div class="hinweis">Betreibst du Kurse für andere Anbieter: Die Absenderadresse darf gemeinsam sein, Absendername und Antwortadresse gehören zum jeweiligen Anbieter — sonst wirkt die Mail auf den Teilnehmer wie Phishing, und seine Rückfragen landen bei dir.</div>`,
+    pruefen: async () => {
+      await api('mail/speichern', {
+        absenderName: $('#absname').value, absenderMail: $('#absmail').value,
+        antwortAn: $('#antwortan').value, standardFuerKurse: $('#cbstandard').checked,
+      });
+      await ladeStand();
+      if (!schrittErledigt('absender')) meldung = { text: 'Bitte eine Absenderadresse eintragen.', art: 'warn' };
+      return schrittErledigt('absender');
+    } };
+  },
+
+  ablefy: () => {
+    const konten = stand.konten;
+    return { knopf: 'Verbinden und weiter', knopfErledigt: 'Weiter', html: `
+    <p>Mit einem API-Schlüssel liest das Programm deine Produktliste, erfährt von Ablefy jedes beantwortete Quiz und holt zu jeder Bestellung Name und E-Mail-Adresse des Teilnehmers.</p>
+    <details class="klapp" ${konten.length ? '' : 'open'}><summary>API-Schlüssel bei Ablefy erstellen</summary>
+    <div class="klappinhalt"><ol>
+      <li>Auf <strong>myablefy.com</strong> anmelden.</li>
+      <li>Oben rechts Profil → <strong>Einstellungen</strong> → links <strong>Integrationen</strong>.</li>
+      <li>Im Abschnitt <strong>ablefy API</strong> auf <strong>API-Schlüssel erstellen</strong>.</li>
+      <li>Ablefy zeigt <em>Schlüssel</em> und <em>Secret</em>. Beide hier einfügen.</li>
+    </ol>
+    <p class="leise">Die Rückmeldung von Ablefy (den „Webhook“) richtet das Programm beim Verbinden selbst ein. Bei Ablefy ist nichts weiter einzutragen.</p></div></details>
+    ${konten.length ? `<div class="liste" style="margin-bottom:14px">${konten.map((k) => `<div class="zeile">
+      <span><span class="haupt">${esc(k.name)}</span><br><span class="leise">${k.webhookId || k.webhookUrl ? 'Rückmeldung bei Ablefy eingerichtet' : 'Rückmeldung fehlt'} · letzte Meldung von Ablefy: ${herKurz(k.letzterEmpfang)}</span></span>
+      <span class="marke m-gut">verbunden</span></div>`).join('')}</div>
+      <p class="leise">Weitere Ablefy-Konten verbindest du später unter „Ablefy &amp; Kurse“.</p>`
+    : `<label for="kname">Bezeichnung <span class="zusatz">zur Unterscheidung, wenn du mehrere Konten verbindest — z. B. der Firmenname</span></label>
+    <input id="kname" placeholder="Praxis Sonnenweg">
+    <div class="zwei">
+      <div><label for="kkey">API-Schlüssel</label><input id="kkey" autocomplete="off"></div>
+      <div><label for="ksec">Secret</label><input id="ksec" type="password" autocomplete="off"></div>
+    </div>`}`,
+    pruefen: async () => {
+      if (stand.konten.length) return true;
+      const r = await api('konto/anlegen', { name: $('#kname').value, schluessel: $('#kkey').value, secret: $('#ksec').value });
+      await ladeStand();
+      meldung = r.webhookFehler
+        ? { text: 'Konto verbunden, aber die Rückmeldung bei Ablefy ließ sich nicht einrichten: ' + r.webhookFehler + ' — unter „Ablefy & Kurse“ noch einmal versuchen.', art: 'warn' }
+        : { text: `Verbunden: ${r.produkte.length} Produkte gefunden, Rückmeldung bei Ablefy eingerichtet.`, art: 'ok' };
+      return true;
+    } };
+  },
+
+  kurs: () => {
+    const k = aKurs();
+    if (!k) {
+      return { knopf: 'Kurs anlegen', html: `
+      <p>Ein Kurs ist hier ein Ablefy-Produkt, für das nach dem Abschlussquiz eine Bescheinigung verschickt wird. Jeder Kurs bekommt eigene ZPP-Angaben, eine eigene Unterschrift und einen eigenen Mailtext.</p>
+      ${stand.konten.length > 1 ? `<label for="akonto">Ablefy-Konto, in dem der Kurs liegt</label>
+        <select id="akonto">${stand.konten.map((x) => `<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select>` : ''}
+      <p class="leise">Weitere Kurse legst du später unter „Ablefy &amp; Kurse“ an.</p>`,
+      pruefen: async () => {
+        const kontoId = $('#akonto') ? $('#akonto').value : stand.konten[0].id;
+        const r = await api('kurs/anlegen', { kontoId });
+        await merkeSchritt(aSchritt, r.kurs.id);
+        await ladeStand();
+        return false; // Seite neu zeichnen, jetzt mit Produktwahl
+      } };
+    }
+    return { html: `
+    <h3>Produkt</h3>
+    <label for="produkt">Ablefy-Produkt <span class="zusatz">Liste aus deinem Ablefy-Konto</span></label>
+    <select id="produkt"><option value="">— wird geladen —</option></select>
+    <button class="knopf leiser" style="margin-top:10px" data-tu="produkteladen" data-id="${k.id}">Produkte neu laden</button>
+
+    <h3 style="margin-top:28px">Abschlussquiz</h3>
+    <p>Die Bescheinigung wird verschickt, sobald ein Teilnehmer das Quiz der <strong>letzten Einheit</strong> besteht. Welches Quiz das ist, kann Ablefy nicht mitteilen — du zeigst es dem Programm einmal:</p>
+    <div class="anleitung"><ol>
+      <li>Öffne in einem zweiten Fenster deinen eigenen Teilnehmer-Zugang zum Kurs. Hast du keinen: einen Testkauf mit 100-Prozent-Gutschein machen.</li>
+      <li>Ist die letzte Einheit wegen Drip-In noch gesperrt: in Ablefy unter <strong>Kunden → Kurs-Zugänge</strong> beim Kurs auf die drei Punkte, deinen Testzugang anhaken, <strong>Vollzugriff gewähren</strong>. Damit sind für diesen Zugang alle Einheiten sofort offen.</li>
+      <li>Die <strong>letzte Einheit</strong> öffnen und das Quiz einmal beantworten. Bestehen ist nicht nötig.</li>
+      <li>Hier auf <em>Liste aktualisieren</em>. Das Quiz erscheint mit dem Namen seiner Lektion. Auf <strong>Als Abschlussquiz markieren</strong> klicken.</li>
+    </ol></div>
+    ${quizAuswahlHtml(k)}
+    <div id="gesehen" class="liste" style="margin-top:10px"><div class="zeile"><span class="leise">Noch kein Quiz gemeldet.</span></div></div>
+    <div class="reihe"><button class="knopf leiser" data-tu="gesehenladen" data-id="${k.id}">Liste aktualisieren</button></div>
+    <div class="hinweis">Hat die letzte Einheit mehrere Quizze, alle markieren — die Bescheinigung geht erst raus, wenn ein Teilnehmer jedes davon bestanden hat. Erscheint nichts: Ablefy meldet nur Quizze, die nach dem Verbinden des Kontos beantwortet wurden. Das Quiz noch einmal beantworten.</div>`,
+    pruefen: async () => {
+      await api('kurs/speichern', { kurs: { id: k.id, produktId: $('#produkt').value,
+        produktName: $('#produkt').selectedOptions[0] ? $('#produkt').selectedOptions[0].textContent : '' } });
+      await ladeStand();
+      if (!schrittErledigt('kurs')) meldung = { text: aKurs().produktId ? 'Bitte noch das Abschlussquiz markieren.' : 'Bitte zuerst das Produkt auswählen.', art: 'warn' };
+      return schrittErledigt('kurs');
+    } };
+  },
+
+  zpp: () => {
+    const k = aKurs();
+    if (!k) return { html: '<p>Es ist kein Kurs in Arbeit. Bitte einen Schritt zurück.</p>' };
+    return { html: `
+    <p>Diese Angaben stehen im <strong>ZPP-Anbieterportal</strong> beim eingetragenen <strong>Kurs</strong> — nicht beim Konzept. Am besten von dort kopieren: Die Krankenkasse gleicht Titel und Kurs-ID Zeichen für Zeichen ab.</p>
+    <div class="hinweis warn">Auf die Bescheinigung gehört die <strong>Kurs-ID</strong>, nicht die Konzept-ID. Auf dem Formular heißt dieses Feld „Angebots-ID“.</div>
+    ${feld('titel', 'Titel der Maßnahme', k.titel, 'wortgleich wie im Portal')}
+    ${feld('zppkursid', 'ZPP-Kurs-ID', k.zppKursId, 'wird auf dem Formular als Angebots-ID eingetragen', 'text', 'KU-ST-…')}
+    ${feld('prinzip', 'Präventionsprinzip', k.praeventionsprinzip, 'wie im Portal')}
+    ${feld('anbieter', 'Name des Anbieters', k.anbieterName, 'wie im Portal')}
+    ${feld('adresse', 'Anschrift des Anbieters', k.anbieterAdresse, '', 'text', 'Straße Hausnummer, PLZ Ort')}
+    <div class="zwei">
+      <div>${feld('ort', 'Ausstellungsort', k.ort, 'steht neben dem Datum auf der Bescheinigung')}</div>
+      <div>${feld('mindest', 'Mindestbetrag in Euro', k.mindestGebuehr, 'unter diesem Betrag wird keine Bescheinigung ausgestellt', 'number')}</div>
+    </div>
+    <div class="hinweis">Der Mindestbetrag hält Testkäufe und Voll-Gutscheine fern: Eine Bescheinigung über 0,00 € erstattet keine Kasse. 0,01 lässt jeden echten Kauf durch.</div>
+
+    <h3 style="margin-top:28px">Unterschrift</h3>
+    <p class="leise">Unterschrift auf weißes Papier, fotografieren, Hintergrund entfernen, als PNG speichern. Ohne Bild setzt das Programm den Namen als digitale Signatur ein. In beiden Fällen muss die Person unterschriftsberechtigt sein.</p>
+    ${k.hatUnterschrift ? '<div class="hinweis gut">Unterschriftsbild ist hinterlegt.</div>' : ''}
+    <label for="sigdatei">Unterschrift als PNG hochladen <span class="zusatz">durchsichtiger Hintergrund, unter 300 KB</span></label>
+    <input id="sigdatei" type="file" accept="image/png">
+    ${feld('signame', 'Oder: Name der unterschreibenden Person', k.unterschriftName, 'wird als digitale Signatur eingesetzt')}`,
+    pruefen: async () => {
+      await api('kurs/speichern', { kurs: kursAusFeldern(k) });
+      await ladeStand();
+      if (!schrittErledigt('zpp')) meldung = { text: 'Gespeichert. Es fehlt noch: ' + aKurs().mangel.filter((m) => !/Absender|Produkt|Abschlussquiz/.test(m)).join(', ') + '.', art: 'warn' };
+      return schrittErledigt('zpp');
+    } };
+  },
+
+  text: () => {
+    const k = aKurs();
+    if (!k) return { html: '<p>Es ist kein Kurs in Arbeit. Bitte einen Schritt zurück.</p>' };
+    const m = stand.mail;
+    return { html: `
+    <p>Mit dieser Mail bekommt der Teilnehmer die Bescheinigung als PDF-Anhang. Der Text ist ein Vorschlag und lässt sich frei ändern.</p>
+    ${absenderBlock(k, m)}
+    ${feld('betreff', 'Betreff', k.betreff)}
+    <label for="mailtext">Text <span class="zusatz">Platzhalter: {vorname} {nachname} {kurs} {anbieter} · **Text** wird fett</span></label>
+    <textarea id="mailtext">${esc(k.mailText || stand.standardtext)}</textarea>`,
+    pruefen: async () => {
+      await api('kurs/speichern', { kurs: kursAusFeldern(k) });
+      await ladeStand();
+      if (!schrittErledigt('text')) meldung = { text: 'Bitte eine Absenderadresse eintragen.', art: 'warn' };
+      return schrittErledigt('text');
+    } };
+  },
+
+  probelauf: () => {
+    const k = aKurs();
+    if (!k) return { html: '<p>Es ist kein Kurs in Arbeit. Bitte einen Schritt zurück.</p>' };
+    return { knopf: 'Bescheinigung ansehen', knopfErledigt: 'Bescheinigung ansehen', weiterZusaetzlich: true, html: `
+    <p>Der Probelauf erstellt eine Bescheinigung aus einer echten Bestellung und zeigt sie hier an — verschickt wird nichts. Er ist die einzige Kontrolle, ob die Angaben stimmen: Das Programm druckt, was eingetragen ist.</p>
+    <div class="anleitung"><ol>
+      <li>Eine Bestellung aus dem Kurs auswählen — dein eigener Testkauf oder eine echte Bestellung.</li>
+      <li>In Ablefy unter <em>Bestellungen</em> die <strong>Bestellnummer</strong> dieser Bestellung kopieren.</li>
+      <li>Hier einfügen und auf <em>Bescheinigung ansehen</em> klicken.</li>
+    </ol></div>
+    <label for="probeorder">Bestellnummer <span class="zusatz">Bestell-ID oder order_token aus Ablefy</span></label>
+    <input id="probeorder" placeholder="z. B. 1234567">
+    <div id="probeergebnis">${probeVorschau[k.id] || ''}</div>
+    ${k.letzterProbelauf ? `<div class="hinweis gut">Letzter Probelauf: ${zeitDe(k.letzterProbelauf)}.</div>` : ''}
+    <details class="klapp" style="margin-top:14px"><summary>Prüfliste für das PDF</summary>
+    <div class="klappinhalt"><p class="leise">Gegen den Kurseintrag im ZPP-Anbieterportal vergleichen:</p><ul>
+      <li>Titel der Maßnahme wortgleich</li><li>Kurs-ID (auf dem Formular „Angebots-ID“)</li><li>Präventionsprinzip</li>
+      <li>Anbietername und Anschrift</li><li>Name des Teilnehmers richtig geschrieben</li>
+      <li>Teilnahmegebühr</li><li>Unterschrift sitzt im Feld</li></ul>
+    <p class="leise">Ein Fehler in der Kurs-ID fällt sonst erst auf, wenn die erste Krankenkasse ablehnt.</p></div></details>`,
+    pruefen: async () => {
+      await zeigeProbelauf(k.id, $('#probeorder').value, $('#probeergebnis'));
+      const alt = meldung;
+      await ladeStand();
+      meldung = alt;
+      return false; // Der Betreiber vergleicht erst, dann klickt er „Weiter“
+    } };
+  },
+
+  freigabe: () => {
+    const k = aKurs();
+    if (!k) return { html: '<p>Es ist kein Kurs in Arbeit. Bitte einen Schritt zurück.</p>' };
+    return { knopf: 'Speichern und weiter', html: `
+    <p>Bis hierher hat kein Teilnehmer etwas bemerkt. Mit der Freigabe reagiert das Programm auf bestandene Abschlussquizze — zunächst im <strong>Testmodus</strong>: Alle Bescheinigungen gehen an deine Testadresse statt an die Teilnehmer.</p>
+    <p>Empfohlen: Testmodus anlassen, bis ein oder zwei echte Teilnehmer den Kurs abgeschlossen haben und die Testmails stimmen. Dann auf der Kursseite den Testmodus abschalten.</p>
+    <label class="cb"><input type="checkbox" id="cbaktiv" ${k.aktiv ? 'checked' : ''}>
+      <span><strong>Kurs freigeben</strong><br><span class="leise">Ohne Freigabe löst ein bestandenes Quiz nichts aus.</span></span></label>
+    <label class="cb"><input type="checkbox" id="cbtest" ${k.testmodus ? 'checked' : ''}>
+      <span><strong>Testmodus</strong><br><span class="leise">Bescheinigungen gehen an die Testadresse, Betreff mit „[TEST]“. Beliebig oft wiederholbar.</span></span></label>
+    ${feld('testempf', 'Testadresse', k.testEmpfaenger || stand.mail.warnAn, '', 'email')}
+    ${k.mangel.length ? `<div class="hinweis warn">Für die Freigabe fehlt noch: ${esc(k.mangel.join(', '))}. Über „Zurück“ zu den Schritten.</div>` : ''}`,
+    pruefen: async () => {
+      await api('kurs/speichern', { kurs: kursAusFeldern(k) });
+      await ladeStand();
+      if (!schrittErledigt('freigabe')) meldung = { text: 'Gespeichert. Der Kurs ist noch nicht freigegeben — dafür „Kurs freigeben“ anhaken.', art: 'warn' };
+      return schrittErledigt('freigabe');
+    } };
+  },
+
+  fertig: () => {
+    const k = aKurs();
+    return { html: `
+    <p>Die Einrichtung ist abgeschlossen. ${k ? `Der Kurs <strong>${esc(k.titel)}</strong> ist freigegeben${k.testmodus ? ' und läuft im Testmodus' : ''}.` : ''}</p>
+    <div class="anleitung"><strong>Ab jetzt</strong>
+      <ol>
+        ${k && k.testmodus ? '<li>Die ersten Testmails abwarten und prüfen. Stimmt alles, auf der Kursseite den Testmodus abschalten.</li>' : ''}
+        <li>Die Übersicht zeigt jede verschickte Bescheinigung und jeden Grund, warum eine nicht verschickt wurde.</li>
+        <li>Geht eine Bescheinigung nicht raus, bekommst du eine Mail mit dem Grund und dem nächsten Schritt.</li>
+        <li>Einmal im Monat unter „Einstellungen“ eine Sicherung herunterladen.</li>
+      </ol></div>
+    <p class="leise">Weitere Kurse: „Ablefy &amp; Kurse“ → „Kurs anlegen“, oder geführt über „Einstellungen“.</p>
+    <div class="reihe"><button class="knopf" data-a="abschliessen">Zur Übersicht</button></div>` };
+  },
+};
+
+/** Was als Abschlussquiz markiert ist, plus wann es zuletzt gemeldet wurde. */
+function quizAuswahlHtml(k) {
+  const q = k.quizze || [];
+  if (!q.length) return '';
+  const namen = q.map((x) => `<strong>${esc(x.name || 'Quiz ' + x.id)}</strong>`).join(', ');
+  return `<div class="hinweis gut">${q.length === 1 ? 'Abschlussquiz: ' + namen : 'Abschlussquizze (alle müssen bestanden sein): ' + namen}
+    <br><span class="leise">Zuletzt gemeldet: ${k.quizZuletzt ? herKurz(k.quizZuletzt) : 'noch nie'}</span></div>`;
+}
+
+/** Hinweis, wenn im Kurs ein neues Quiz mit dem Lektionsnamen des Abschlussquiz aufgetaucht ist. */
+function quizWarnungHtml(k) {
+  const w = k.quizWarnung;
+  if (!w) return '';
+  return `<div class="karte" style="border-color:var(--warn)">
+    <h2>Bitte prüfen: neues Quiz in „${esc(kursName(k))}“</h2>
+    <p>Seit ${herKurz(w.zeit)} wird ein Quiz gemeldet, das das Programm vorher nie gesehen hat: <strong>${esc(w.quizName)}</strong> (Kennung ${esc(w.quizId)}). Es hat denselben Lektionsnamen wie das eingestellte Abschlussquiz (Kennung ${esc(w.ersetzt)}).</p>
+    <p>Das passiert, wenn ein Quiz in Ablefy gelöscht und neu angelegt wurde. Dann gilt die alte Kennung nicht mehr, und Teilnehmer bekommen keine Bescheinigung.</p>
+    <div class="reihe">
+      <button class="knopf" data-tu="warnungja" data-id="${k.id}">Neues Quiz als Abschlussquiz übernehmen</button>
+      <button class="knopf leiser" data-tu="warnungnein" data-id="${k.id}">Ignorieren, das alte gilt weiter</button>
+    </div>
+  </div>`;
+}
+
+/** Absender-Abschnitt auf Kursseite und im Assistenten. */
+function absenderBlock(k, m) {
+  if (m.standardFuerKurse) {
+    return `<div class="hinweis">Absender laut Mailversand: <strong>${esc(m.absenderName || '—')}</strong> &lt;${esc(m.absenderMail || '—')}&gt;${m.antwortAn ? ' · Antworten an ' + esc(m.antwortAn) : ''}</div>
+    <label class="cb"><input type="checkbox" id="cbeigen" ${k.eigenerAbsender ? 'checked' : ''}>
+      <span><strong>Abweichende Absenderangaben für diesen Kurs</strong><br><span class="leise">Wenn dieser Kurs unter dem Namen eines anderen Anbieters läuft.</span></span></label>
+    <div id="eigenfelder" style="display:${k.eigenerAbsender ? 'block' : 'none'}">${absenderFelder(k)}</div>`;
+  }
+  return absenderFelder(k);
+}
+function absenderFelder(k) {
+  return `<div class="zwei">
+      <div>${feld('absname', 'Absendername', k.absenderName, '', 'text', 'Praxis Sonnenweg')}</div>
+      <div>${feld('absmail', 'Absenderadresse', k.absenderMail, 'Domain muss beim Versanddienst freigeschaltet sein', 'email')}</div>
+    </div>
+    ${feld('antwortan', 'Antwortadresse', k.antwortAn, 'wohin Rückfragen der Teilnehmer gehen · leer = Absenderadresse', 'email')}`;
+}
+
+/* ---------------- Startseite ---------------- */
+
+function zeichneStart() {
+  const s = stand.schritte;
+  const e = stand.einstellungen || {};
+  const offen = stand.offen || [];
+  const offenBand = offen.length ? `<div class="karte" style="border-color:var(--warn)">
+      <h2>${offen.length === 1 ? 'Eine Bescheinigung wartet' : offen.length + ' Bescheinigungen warten'}</h2>
+      <p class="leise" style="margin-top:-4px">Der Versand ist an einer vorübergehenden Störung gescheitert. Das Programm wiederholt ihn alle 15 Minuten, bis zu acht Mal. Klappt es dann nicht, bekommst du eine Mail.</p>
+      <div class="liste">${offen.map((o) => `<div class="zeile">
+        <span><span class="haupt">Bestellung ${esc(o.orderToken)}</span><br>
+        <span class="leise">${esc(o.grund || '')} · ${o.versuche}. Versuch · ${herKurz(o.zeit)}</span></span>
+      </div>`).join('')}</div>
+      <div class="reihe"><button class="knopf leiser" data-tu="wiederholen">Jetzt erneut versuchen</button></div>
+    </div>` : '';
+
+  const einrichtung = e.assistentFertig ? '' : `<div class="karte" style="border-color:var(--akzent)">
+    <h2>Einrichtung noch nicht abgeschlossen</h2>
+    <p class="leise" style="margin-top:-4px">Unterbrochen bei Schritt ${Math.max(1, Math.min(aSchritt, SCHRITTE.length - 2))} von ${SCHRITTE.length - 2}: ${esc(SCHRITTE[Math.max(1, Math.min(aSchritt, SCHRITTE.length - 2))].titel)}.</p>
+    <div class="reihe"><button class="knopf" data-gehe="assistent">Einrichtung fortsetzen</button></div>
+  </div>`;
+
+  const kursZeilen = stand.kurse.map((k) => {
+    const marke = !k.aktiv
+      ? '<span class="marke m-still">nicht freigegeben</span>'
+      : k.testmodus
+      ? '<span class="marke m-warn">Testmodus</span>'
+      : '<span class="marke m-gut">freigegeben</span>';
+    return `<div class="zeile">
+      <span><span class="haupt">${esc(kursName(k))}</span><br>
+        <span class="leise">${k.titel ? esc(k.produktName || 'kein Produkt gewählt') : (k.produktName ? 'ZPP-Titel fehlt noch' : 'kein Produkt gewählt')}${k.zppKursId ? ' · ' + esc(k.zppKursId) : ''}${k.aktiv && k.quizze?.length ? ' · Abschlussquiz zuletzt gemeldet ' + herKurz(k.quizZuletzt) : ''}</span></span>
+      <span style="display:flex;gap:10px;align-items:center">${marke}
+        <button class="knopf leiser" data-kurs="${k.id}">Öffnen</button></span>
+    </div>`;
+  }).join('') || '<div class="zeile"><span class="leise">Noch kein Kurs angelegt.</span></div>';
+
+  const kontoZeilen = stand.konten.map((k) => `<div class="zeile">
+      <span><span class="haupt">${esc(k.name)}</span><br>
+      <span class="leise">letzte Meldung von Ablefy: ${herKurz(k.letzterEmpfang)}</span></span>
+      ${k.hatZugang ? `<span class="marke ${k.letzterEmpfang ? 'm-gut' : 'm-still'}">${k.letzterEmpfang ? 'verbunden' : 'wartet'}</span>`
+        : '<span class="marke m-fehler">Zugangsdaten fehlen</span>'}
+    </div>`).join('');
+
+  return `${kopfHtml()}
+  ${meldungHtml()}
+  ${stand.kurse.map(quizWarnungHtml).join('')}
+  ${offenBand}
+  ${einrichtung}
+  <div class="karte">
+    <h2>Kurse</h2>
+    <div class="liste">${kursZeilen}</div>
+    ${stand.konten.length ? '<div class="reihe"><button class="knopf leiser" data-gehe="konten">Kurs anlegen</button><button class="knopf link" data-tu="kursgefuehrt">Kurs geführt anlegen</button></div>' : ''}
+  </div>
+
+  ${stand.konten.length ? `<div class="karte"><h2>Ablefy-Konten</h2><div class="liste">${kontoZeilen}</div></div>` : ''}
+
+  <div class="karte">
+    <h2>Letzte Ereignisse</h2>
+    ${protokollTabelle(stand.protokoll.slice(0, 8))}
+    ${stand.protokoll.length > 8 ? '<div class="reihe"><button class="knopf leiser" data-gehe="protokoll">Ganzes Protokoll</button></div>' : ''}
+  </div>
+  ${fussHtml()}`;
+}
+
+function protokollTabelle(eintraege) {
+  if (!eintraege.length) return '<p class="leise">Noch keine Ereignisse. Sobald ein Teilnehmer ein Abschlussquiz beantwortet, steht es hier.</p>';
+  const marke = (e) => {
+    const t = String(e.ergebnis || '');
+    const art = t === 'verschickt' ? 'm-gut' : t.includes('test') || t === 'prüfen' ? 'm-warn'
+      : t === 'fehler' || t === 'angehalten' || t === 'aufgegeben' ? 'm-fehler' : 'm-still';
+    return `<span class="marke ${art}">${esc(t)}</span>`;
+  };
+  return `<div style="overflow-x:auto"><table>
+    <tr><th>Wann</th><th>Kurs</th><th>Ergebnis</th><th>Details</th></tr>
+    ${eintraege.map((e) => `<tr>
+      <td style="white-space:nowrap">${zeitDe(e.zeit)}</td>
+      <td>${esc(e.kursName || '—')}</td>
+      <td>${marke(e)}</td>
+      <td>${esc(e.grund || e.an || e.name || '')}</td>
+    </tr>`).join('')}
+  </table></div>`;
+}
+
+/* ---------------- Mailversand ---------------- */
+
+function zeichneMail() {
+  const m = stand.mail;
+  return `${kopfHtml()}${meldungHtml()}
+  <div class="karte">
+    <h2>Versanddienst</h2>
+    <p class="leise" style="margin-top:-4px">Über diesen Dienst werden Bescheinigungen und Störungsmeldungen verschickt. Empfohlen ist Resend (kostenlos bis 3.000 Mails im Monat). Einrichtung Klick für Klick: <code>MAILVERSAND-EINRICHTEN.md</code> im Paket.</p>
+
+    <label for="anbieter">Versanddienst</label>
+    <select id="anbieter">
+      <option value="">— bitte wählen —</option>
+      <option value="resend" ${m.anbieter === 'resend' ? 'selected' : ''}>Resend (empfohlen)</option>
+      <option value="hostinger" ${m.anbieter === 'hostinger' ? 'selected' : ''}>Hostinger Postfach</option>
+    </select>
+
+    <label for="token">API-Schlüssel <span class="zusatz">${m.hatToken ? 'gespeichert — nur ausfüllen, um ihn zu ersetzen' : 'bei Resend unter API Keys erstellen'}</span></label>
+    <input id="token" type="password" autocomplete="off" placeholder="${m.hatToken ? '••••••••••••' : 're_…'}">
+
+    <div id="hostingerfeld" style="display:${m.anbieter === 'hostinger' ? 'block' : 'none'}">
+      <label for="mailboxid">Postfach-Kennung bei Hostinger</label>
+      <input id="mailboxid" value="${esc(m.mailboxId)}" placeholder="aus GET /api/v1/me">
+    </div>
+
+    <label for="warnan">Deine E-Mail-Adresse <span class="zusatz">empfängt Testmails und Störungsmeldungen</span></label>
+    <input id="warnan" type="email" value="${esc(m.warnAn)}" placeholder="du@deine-domain.de">
+
+    <h2 style="margin-top:28px">Absender</h2>
+    <p class="leise" style="margin-top:-4px">Absender der Störungsmeldungen — und der Bescheinigungen, wenn „Für alle Kurse verwenden“ gesetzt ist.</p>
+    <div class="zwei">
+      <div><label for="absname">Absendername</label>
+        <input id="absname" value="${esc(m.absenderName)}" placeholder="Praxis Sonnenweg"></div>
+      <div><label for="absmail">Absenderadresse <span class="zusatz">Domain muss beim Versanddienst freigeschaltet sein</span></label>
+        <input id="absmail" type="email" value="${esc(m.absenderMail)}" placeholder="bescheinigung@deine-domain.de"></div>
+    </div>
+    <label for="antwortan">Antwortadresse <span class="zusatz">wohin Rückfragen der Teilnehmer gehen · leer = Absenderadresse</span></label>
+    <input id="antwortan" type="email" value="${esc(m.antwortAn)}" placeholder="hallo@deine-domain.de">
+    <label class="cb"><input type="checkbox" id="cbstandard" ${m.standardFuerKurse ? 'checked' : ''}>
+      <span><strong>Für alle Kurse verwenden</strong><br>
+      <span class="leise">Kurse übernehmen diese Angaben automatisch. Ein Kurs kann abweichen: Kursseite → „Wie die Mail aussieht“ → „abweichende Absenderangaben“.</span></span></label>
+    ${m.standardFuerKurse ? `<div class="hinweis">Gilt für ${stand.kurse.filter((k) => !k.eigenerAbsender).length} von ${stand.kurse.length} ${stand.kurse.length === 1 ? 'Kurs' : 'Kursen'}${stand.kurse.some((k) => k.eigenerAbsender) ? '. Abweichend: ' + esc(stand.kurse.filter((k) => k.eigenerAbsender).map(kursName).join(', ')) : ''}.</div>` : ''}
+
+    <div class="reihe">
+      <button class="knopf" data-tu="mailspeichern">Speichern</button>
+      <button class="knopf leiser" data-tu="mailtest">Testmail schicken</button>
+    </div>
+    ${m.geprueft ? `<div class="hinweis gut">Testmail erfolgreich verschickt am ${zeitDe(m.geprueft)}.</div>`
+      : '<div class="hinweis warn">Noch nicht getestet. Erst nach einer erfolgreichen Testmail werden Bescheinigungen verschickt.</div>'}
+  </div>
+
+  <details class="klapp"><summary>Absenderdomain freischalten</summary>
+  <div class="klappinhalt leise">
+    <p>Resend verschickt nur von Domains, deren Inhaber das bestätigt hat. Bei Resend: <em>Domains</em> → <em>Add Domain</em> → die drei angezeigten DNS-Einträge beim Domainanbieter anlegen → <em>Verify</em>, bis alle auf grün stehen. Ausführlich in <code>MAILVERSAND-EINRICHTEN.md</code>.</p>
+    <p>Gehört die Domain einem Kunden, muss der Kunde oder sein Webdienstleister die Einträge setzen. Das ist meist der langsamste Schritt — früh anstoßen.</p>
+  </div></details>
+  ${fussHtml()}`;
+}
+
+/* ---------------- Ablefy-Konten ---------------- */
+
+function zeichneKonten() {
+  const zeilen = stand.konten.map((k) => {
+    const kurse = stand.kurse.filter((x) => x.kontoId === k.id);
+    return `<div class="karte">
+      <div class="kopf" style="margin-bottom:8px">
+        <h2 style="margin:0">${esc(k.name)}</h2>
+        ${k.hatZugang ? `<span class="marke ${k.letzterEmpfang ? 'm-gut' : 'm-still'}">${k.letzterEmpfang ? 'verbunden' : 'noch keine Meldung'}</span>`
+          : '<span class="marke m-fehler">Zugangsdaten fehlen</span>'}
+      </div>
+      <p class="leise" style="margin:0 0 10px">Letzte Meldung von Ablefy: ${herKurz(k.letzterEmpfang)} · ${kurse.length} ${kurse.length === 1 ? 'Kurs' : 'Kurse'}</p>
+      ${k.hatZugang ? '' : '<div class="hinweis fehler">Schlüssel und Secret fehlen (nach dem Einspielen einer Sicherung). Unter „Schlüssel ersetzen“ neu eintragen — bis dahin werden für dieses Konto keine Bescheinigungen ausgestellt.</div>'}
+      <details class="klapp" style="margin:12px 0 0"><summary>Rückmeldung von Ablefy (Webhook)</summary>
+        <div class="klappinhalt">
+          <p class="leise">Über diese Adresse meldet Ablefy jedes beantwortete Quiz. Das Programm hat sie beim Verbinden selbst bei Ablefy eingetragen (Marketing → Webhooks). Wurde sie dort gelöscht, kommen keine Meldungen mehr an — dann neu eintragen.</p>
+          <code>${esc(k.webhookUrl || '')}</code>
+          <div class="reihe">
+            <button class="knopf leiser" data-tu="kontopruefen" data-id="${k.id}">Bei Ablefy prüfen</button>
+            <button class="knopf leiser" data-tu="webhookneu" data-id="${k.id}">Neu eintragen</button>
+          </div>
+        </div>
+      </details>
+      <details class="klapp" ${k.hatZugang ? '' : 'open'}><summary>Umbenennen oder Schlüssel ersetzen</summary>
+        <div class="klappinhalt">
+          <label for="kname-${k.id}">Bezeichnung</label>
+          <div style="display:flex;gap:10px"><input id="kname-${k.id}" value="${esc(k.name)}">
+            <button class="knopf leiser" data-tu="kontoname" data-id="${k.id}">Umbenennen</button></div>
+          <h3 style="margin-top:20px">Schlüssel ersetzen</h3>
+          <p class="leise" style="margin-top:-2px">Neuen Schlüssel aus Ablefy eintragen${k.zugangGeaendert ? ` (zuletzt ersetzt ${zeitDe(k.zugangGeaendert)})` : ''}. Kurse und Rückmeldung bleiben erhalten.</p>
+          <div class="zwei">
+            <div><label for="kkey-${k.id}">API-Schlüssel</label><input id="kkey-${k.id}" autocomplete="off"></div>
+            <div><label for="ksec-${k.id}">Secret</label><input id="ksec-${k.id}" type="password" autocomplete="off"></div>
+          </div>
+          <div class="reihe"><button class="knopf leiser" data-tu="kontoschluessel" data-id="${k.id}">Schlüssel ersetzen</button></div>
+        </div>
+      </details>
+      <div class="reihe">
+        <button class="knopf" data-tu="kursneu" data-id="${k.id}">Kurs in diesem Konto anlegen</button>
+        ${kurse.length ? '' : `<button class="knopf gefahr" data-tu="kontoweg" data-id="${k.id}">Konto entfernen</button>`}
+      </div>
+    </div>`;
+  }).join('');
+
+  return `${kopfHtml()}${meldungHtml()}${zeilen}
+  <div class="karte">
+    <h2>${stand.konten.length ? 'Weiteres ' : ''}Ablefy-Konto verbinden</h2>
+    <p class="leise" style="margin-top:-4px">Auf <strong>myablefy.com</strong>: Profil → <em>Einstellungen → Integrationen → ablefy API → API-Schlüssel erstellen</em>. Ablefy zeigt Schlüssel und Secret.</p>
+    <label for="kname">Bezeichnung <span class="zusatz">zur Unterscheidung mehrerer Konten, z. B. der Firmenname</span></label>
+    <input id="kname" placeholder="Praxis Sonnenweg">
+    <div class="zwei">
+      <div><label for="kkey">API-Schlüssel</label><input id="kkey" autocomplete="off"></div>
+      <div><label for="ksec">Secret</label><input id="ksec" type="password" autocomplete="off"></div>
+    </div>
+    <div class="reihe"><button class="knopf" data-tu="kontoanlegen">Verbinden</button></div>
+    <div class="hinweis">Beim Verbinden prüft das Programm den Schlüssel und richtet die Rückmeldung (Webhook) bei Ablefy ein. Bei Ablefy ist nichts weiter einzutragen.</div>
+  </div>${fussHtml()}`;
+}
+
+/* ---------------- Kursseite ---------------- */
+
+function feld(id, titel, wert, zusatz = '', typ = 'text', platzhalter = '') {
+  return `<label for="${id}">${esc(titel)} ${zusatz ? `<span class="zusatz">${zusatz}</span>` : ''}</label>
+    <input id="${id}" type="${typ}" ${typ === 'number' ? 'step="0.01" min="0"' : ''} value="${esc(wert)}" placeholder="${esc(platzhalter)}">`;
+}
+
+function zeichneKurs() {
+  const k = stand.kurse.find((x) => x.id === offenerKurs);
+  if (!k) { seite = 'start'; return zeichneStart(); }
+  const konto = stand.konten.find((x) => x.id === k.kontoId);
+  const m = stand.mail;
+  const fehltNoch = k.mangel || [];
+  const abschnitt = (titel, fertig, inhalt, offen = false, marke = null) => `<details class="klapp" ${offen ? 'open' : ''}>
+      <summary><span>${esc(titel)}</span>
+        ${marke || `<span class="marke ${fertig ? 'm-gut' : 'm-warn'}">${fertig ? 'vollständig' : 'fehlt noch'}</span>`}</summary>
+      <div class="klappinhalt">${inhalt}</div></details>`;
+
+  const ablefyFertig = Boolean(k.produktId && k.quizze && k.quizze.length);
+  const zppFertig = Boolean(k.titel && k.zppKursId && k.praeventionsprinzip && k.anbieterName && k.anbieterAdresse && k.ort);
+  const sigFertig = Boolean(k.hatUnterschrift || k.unterschriftName);
+  const versandFertig = m.anbieter === 'hostinger' || Boolean(k.absender?.absenderMail);
+
+  return `${kopfHtml()}${meldungHtml()}
+  <div class="karte">
+    <div class="kopf" style="margin:0">
+      <div><h1 style="font-size:1.25rem">${esc(kursName(k))}</h1>
+        <span class="leise">im Ablefy-Konto ${esc(konto ? konto.name : '—')}</span></div>
+      ${k.aktiv ? (k.testmodus ? '<span class="marke m-warn">Testmodus</span>' : '<span class="marke m-gut">freigegeben</span>')
+        : '<span class="marke m-still">nicht freigegeben</span>'}
+    </div>
+    ${fehltNoch.length ? `<div class="hinweis warn">Für die Freigabe fehlt noch: ${esc(fehltNoch.join(', '))}.</div>` : ''}
+  </div>
+  ${quizWarnungHtml(k)}
+
+  ${abschnitt('1. Produkt und Abschlussquiz bei Ablefy', ablefyFertig, `
+    <label for="produkt">Ablefy-Produkt</label>
+    <select id="produkt"><option value="">— wird geladen —</option></select>
+    <button class="knopf leiser" style="margin-top:10px" data-tu="produkteladen" data-id="${k.id}">Produkte neu laden</button>
+
+    <h3 style="margin-top:26px">Abschlussquiz</h3>
+    <p class="leise" style="margin-top:-2px">Das Quiz der letzten Einheit löst die Bescheinigung aus. Damit es in der Liste erscheint, im eigenen Teilnehmer-Zugang die letzte Einheit öffnen und das Quiz einmal beantworten. Ist sie wegen Drip-In gesperrt: in Ablefy unter <em>Kunden → Kurs-Zugänge</em> dem Testzugang Vollzugriff gewähren.</p>
+    ${quizAuswahlHtml(k)}
+    <div id="gesehen" class="liste" style="margin-top:10px"><div class="zeile"><span class="leise">Noch kein Quiz gemeldet.</span></div></div>
+    <div class="reihe"><button class="knopf leiser" data-tu="gesehenladen" data-id="${k.id}">Liste aktualisieren</button></div>
+    <div class="hinweis">Hat die letzte Einheit mehrere Quizze, alle markieren — die Bescheinigung geht erst raus, wenn jedes bestanden ist.</div>
+  `, !ablefyFertig)}
+
+  ${abschnitt('2. Angaben aus dem ZPP-Anbieterportal', zppFertig, `
+    <p class="leise">Vom eingetragenen <strong>Kurs</strong> im ZPP-Anbieterportal, nicht vom Konzept. Am besten von dort kopieren — die Krankenkasse gleicht Titel und Kurs-ID Zeichen für Zeichen ab.</p>
+    ${feld('titel', 'Titel der Maßnahme', k.titel, 'wortgleich wie im Portal')}
+    ${feld('zppkursid', 'ZPP-Kurs-ID', k.zppKursId, 'wird auf dem Formular als Angebots-ID eingetragen', 'text', 'KU-ST-…')}
+    ${feld('prinzip', 'Präventionsprinzip', k.praeventionsprinzip, 'wie im Portal')}
+    ${feld('anbieter', 'Name des Anbieters', k.anbieterName, 'wie im Portal')}
+    ${feld('adresse', 'Anschrift des Anbieters', k.anbieterAdresse, '', 'text', 'Straße Hausnummer, PLZ Ort')}
+    <div class="zwei">
+      <div>${feld('ort', 'Ausstellungsort', k.ort, 'steht neben dem Datum auf der Bescheinigung')}</div>
+      <div>${feld('mindest', 'Mindestbetrag in Euro', k.mindestGebuehr, 'unter diesem Betrag wird keine Bescheinigung ausgestellt', 'number')}</div>
+    </div>
+    <div class="hinweis">Der Mindestbetrag hält Testkäufe und Voll-Gutscheine fern: Eine Bescheinigung über 0,00 € erstattet keine Kasse. 0,01 lässt jeden echten Kauf durch.</div>
+  `)}
+
+  ${abschnitt('3. Unterschrift', sigFertig, `
+    <p class="leise">Unterschrift auf weißes Papier, fotografieren, Hintergrund entfernen, als PNG speichern. Ohne Bild setzt das Programm den Namen als digitale Signatur ein. Die Person muss unterschriftsberechtigt sein.</p>
+    ${k.hatUnterschrift ? '<div class="hinweis gut">Unterschriftsbild ist hinterlegt.</div>' : ''}
+    <label for="sigdatei">Unterschrift als PNG hochladen <span class="zusatz">durchsichtiger Hintergrund, unter 300 KB</span></label>
+    <input id="sigdatei" type="file" accept="image/png">
+    ${feld('signame', 'Oder: Name der unterschreibenden Person', k.unterschriftName, 'wird als digitale Signatur eingesetzt')}
+    ${k.hatUnterschrift ? `<div class="reihe"><button class="knopf gefahr" data-tu="sigweg" data-id="${k.id}">Bild entfernen</button></div>` : ''}
+  `)}
+
+  ${abschnitt('4. Mail an die Teilnehmer', versandFertig, `
+    ${absenderBlock(k, m)}
+    ${feld('betreff', 'Betreff', k.betreff)}
+    <label for="mailtext">Text <span class="zusatz">Platzhalter: {vorname} {nachname} {kurs} {anbieter} · **Text** wird fett</span></label>
+    <textarea id="mailtext">${esc(k.mailText || stand.standardtext)}</textarea>
+  `)}
+
+  ${abschnitt('5. Probelauf und Freigabe', k.aktiv && !k.testmodus, `
+    <p class="leise">Der Probelauf erstellt die Bescheinigung aus einer echten Bestellung und zeigt sie an, ohne sie zu verschicken.${k.letzterProbelauf ? ' Letzter Probelauf: ' + zeitDe(k.letzterProbelauf) + '.' : ''}</p>
+    <label for="probeorder">Bestellnummer <span class="zusatz">Bestell-ID oder order_token aus Ablefy → Bestellungen</span></label>
+    <input id="probeorder" placeholder="z. B. 1234567">
+    <div class="reihe"><button class="knopf" data-tu="probelauf" data-id="${k.id}">Bescheinigung ansehen</button></div>
+    <div id="probeergebnis">${probeVorschau[k.id] || ''}</div>
+
+    <h3 style="margin-top:28px">Freigabe</h3>
+    <label class="cb"><input type="checkbox" id="cbaktiv" ${k.aktiv ? 'checked' : ''}>
+      <span><strong>Kurs freigeben</strong><br>
+      <span class="leise">Ohne Freigabe löst ein bestandenes Quiz nichts aus.</span></span></label>
+    <label class="cb"><input type="checkbox" id="cbtest" ${k.testmodus ? 'checked' : ''}>
+      <span><strong>Testmodus</strong><br>
+      <span class="leise">Bescheinigungen gehen an die Testadresse statt an die Teilnehmer, Betreff mit „[TEST]“. Beliebig oft wiederholbar.</span></span></label>
+    ${feld('testempf', 'Testadresse', k.testEmpfaenger, '', 'email')}
+    <div class="hinweis warn">Vor dem Abschalten des Testmodus das Probelauf-PDF gegen den ZPP-Kurseintrag prüfen: Titel und Kurs-ID Zeichen für Zeichen. Ein Fehler fällt sonst erst auf, wenn die erste Krankenkasse ablehnt.</div>
+
+    <h3 style="margin-top:28px">Bescheinigung nachholen</h3>
+    <p class="leise" style="margin-top:-2px">Für eine Bestellung, deren Bescheinigung nicht verschickt wurde — nachdem der gemeldete Grund behoben ist.</p>
+    <input id="nachorder" placeholder="Bestellnummer">
+    <div class="reihe">
+      <button class="knopf leiser" data-tu="nachholen" data-id="${k.id}">Jetzt verschicken</button>
+      <label class="cb" style="margin:0;align-items:center"><input type="checkbox" id="cberneut" style="margin:0"> <span class="leise">auch wenn für diese Bestellung schon eine verschickt wurde</span></label>
+    </div>
+  `, false, k.aktiv ? (k.testmodus ? '<span class="marke m-warn">Testmodus</span>' : '<span class="marke m-gut">freigegeben</span>') : '<span class="marke m-still">nicht freigegeben</span>')}
+
+  <div class="reihe">
+    <button class="knopf" data-tu="kursspeichern" data-id="${k.id}">Speichern</button>
+    <button class="knopf gefahr" data-tu="kursweg" data-id="${k.id}">Kurs löschen</button>
+  </div>${fussHtml()}`;
+}
+
+/* ---------------- Einstellungen ---------------- */
+
+function zeichneEinstellungen() {
+  const e = stand.einstellungen || {};
+  return `${kopfHtml()}${meldungHtml()}
+  <div class="karte">
+    <h2>Passwort</h2>
+    <p class="leise" style="margin-top:-4px">${stand.eigenesPasswort ? 'Es gilt das hier gesetzte Passwort; das aus der Installation ist außer Kraft.' : 'Es gilt das Passwort aus der Installation (ADMIN_PASSWORT).'}</p>
+    <label for="pwalt">Bisheriges Passwort</label><input id="pwalt" type="password" autocomplete="current-password">
+    <div class="zwei">
+      <div><label for="pwneu">Neues Passwort <span class="zusatz">mindestens zehn Zeichen</span></label><input id="pwneu" type="password" autocomplete="new-password"></div>
+      <div><label for="pwneu2">Noch einmal</label><input id="pwneu2" type="password" autocomplete="new-password"></div>
+    </div>
+    <div class="reihe"><button class="knopf" data-tu="passwort">Passwort ändern</button></div>
+    <div class="hinweis">Passwort vergessen: im Cloudflare-Konto unter <em>Storage &amp; Databases → KV → SPEICHER</em> den Eintrag <code>auth:passwort</code> löschen. Danach gilt wieder das Passwort aus der Installation.</div>
+  </div>
+
+  <div class="karte">
+    <h2>Sicherung</h2>
+    <p class="leise" style="margin-top:-4px">Eine Datei mit allen Konten, Kursen, Unterschriften, Mail-Einstellungen und der Liste der bereits verschickten Bescheinigungen. <strong>Ohne Zugangsdaten</strong> — Ablefy-Schlüssel und Versand-Schlüssel werden nach dem Einspielen einmal neu eingetragen.</p>
+    <div class="reihe">
+      ${DEMO ? '<button class="knopf" data-tu="sicherungdemo">Sicherung herunterladen</button>' : '<a class="knopf" href="/api/sicherung/export" download>Sicherung herunterladen</a>'}
+    </div>
+    <h3 style="margin-top:24px">Sicherung einspielen</h3>
+    <p class="leise" style="margin-top:-2px">Ersetzt alle aktuellen Einstellungen durch die aus der Datei. Bereits eingetragene Zugangsdaten bleiben erhalten.</p>
+    <label for="sicherungdatei">Sicherungsdatei (.json)</label>
+    <input id="sicherungdatei" type="file" accept="application/json,.json">
+    <div class="reihe"><button class="knopf gefahr" data-tu="sicherungimport">Sicherung einspielen</button></div>
+  </div>
+
+  <div class="karte">
+    <h2>Geführte Einrichtung</h2>
+    <p class="leise" style="margin-top:-4px">Der Assistent vom ersten Start. ${e.assistentFertig ? 'Abgeschlossen.' : 'Noch nicht abgeschlossen.'} Er löscht nichts — Erledigtes zeigt er als erledigt an.</p>
+    <div class="reihe">
+      <button class="knopf leiser" data-tu="kursgefuehrt">Weiteren Kurs geführt anlegen</button>
+      <button class="knopf leiser" data-tu="assistentneu">Einrichtung von vorn durchgehen</button>
+    </div>
+  </div>
+
+  <div class="karte">
+    <h2>Über dieses Programm</h2>
+    <table>
+      <tr><td style="color:var(--leise);width:40%">Version</td><td>${esc(stand.version)}</td></tr>
+      <tr><td style="color:var(--leise)">Adresse</td><td><code>${esc(stand.adresse)}</code></td></tr>
+      <tr><td style="color:var(--leise)">Eingerichtet seit</td><td>${zeitDe(e.angelegt)}</td></tr>
+    </table>
+    <p class="leise" style="margin-top:12px">Neue Version einspielen: siehe „Hilfe“.</p>
+  </div>${fussHtml()}`;
+}
+
+/* ---------------- Hilfe ---------------- */
+
+function zeichneHilfe() {
+  return `${kopfHtml()}${meldungHtml()}
+  <div class="karte">
+    <h2>So funktioniert es</h2>
+    <p>Besteht ein Teilnehmer in einem freigegebenen Kurs das Abschlussquiz, meldet Ablefy das an dieses Programm. Das Programm liest Name, E-Mail-Adresse, Kaufdatum und gezahlten Betrag aus der Bestellung, füllt damit Teil 1 der Teilnahmebescheinigung aus, setzt die Unterschrift und schickt das PDF an den Teilnehmer. Teil 2 füllt der Teilnehmer selbst aus und reicht das Formular bei seiner Krankenkasse ein.</p>
+    <p>Je Bestellung wird genau eine Bescheinigung verschickt, auch wenn das Quiz mehrfach beantwortet wird. Scheitert der Versand an einer Störung, wiederholt das Programm ihn alle 15 Minuten, bis zu acht Mal. Fehlt eine Angabe, wird nichts geraten: Die Bescheinigung bleibt liegen, und du bekommst eine Mail mit dem Grund.</p>
+    <p>Das Abschlussquiz erkennt das Programm an seiner Ablefy-Kennung, die du beim Einrichten markiert hast. Taucht im selben Kurs ein neues Quiz mit demselben Lektionsnamen auf, zeigt die Übersicht einen Hinweis — das passiert, wenn ein Quiz in Ablefy neu angelegt wurde.</p>
+  </div>
+
+  <div class="karte">
+    <h2>Wenn etwas nicht klappt</h2>
+    <div style="overflow-x:auto"><table>
+      <tr><th>Meldung oder Beobachtung</th><th>Ursache und Lösung</th></tr>
+      <tr><td>„Ablefy weist den Schlüssel ab“</td><td>Schlüssel und Secret vertauscht oder unvollständig kopiert. Beide neu aus Ablefy einfügen.</td></tr>
+      <tr><td>Kein Quiz in der Liste</td><td>Das Quiz wurde beantwortet, bevor das Konto verbunden war. Noch einmal beantworten, dann „Liste aktualisieren“.</td></tr>
+      <tr><td>Letzte Einheit im eigenen Testzugang gesperrt</td><td>Drip-In. In Ablefy: <em>Kunden → Kurs-Zugänge</em> → drei Punkte beim Kurs → Testzugang anhaken → <em>Vollzugriff gewähren</em>.</td></tr>
+      <tr><td>„Die Domain ist noch nicht verifiziert“</td><td>Bei Resend stehen die DNS-Einträge der Absenderdomain noch nicht auf grün.</td></tr>
+      <tr><td>Testmail kommt nicht an</td><td>Spamordner prüfen. Dann bei Resend, ob die Domain verifiziert ist.</td></tr>
+      <tr><td>„nur 0,00 € gezahlt“</td><td>Gutschein- oder Testkauf unter dem Mindestbetrag. Im Testmodus wird die Bescheinigung trotzdem erstellt, im Echtbetrieb nicht.</td></tr>
+      <tr><td>„an der Bestellung steht kein Name“</td><td>Bei Ablefy den Käufernamen nachtragen, dann auf der Kursseite „Bescheinigung nachholen“.</td></tr>
+      <tr><td>„Letzte Meldung von Ablefy“ liegt Tage zurück, obwohl Teilnehmer aktiv sind</td><td>Die Rückmeldung wurde bei Ablefy gelöscht. Unter „Ablefy &amp; Kurse“ → „Neu eintragen“.</td></tr>
+      <tr><td>„Zugangsdaten fehlen“ bei einem Konto</td><td>Nach dem Einspielen einer Sicherung. Unter „Ablefy &amp; Kurse“ → „Schlüssel ersetzen“.</td></tr>
+      <tr><td>„Dieses Abschlussquiz ist schon … zugeordnet“</td><td>Zwei Kurse zeigen auf dasselbe Quiz. Einen Kurs löschen oder ein anderes Quiz markieren.</td></tr>
+      <tr><td>„Bitte prüfen: neues Quiz in …“</td><td>Ein Quiz mit dem Lektionsnamen des Abschlussquiz ist neu aufgetaucht — meist nach Neuanlage in Ablefy. Übernehmen, sonst werden keine Bescheinigungen mehr verschickt.</td></tr>
+      <tr><td>Ergebnis „teilweise“ im Protokoll</td><td>Der Kurs hat mehrere Abschlussquizze, der Teilnehmer hat noch nicht alle bestanden. Kein Handlungsbedarf.</td></tr>
+    </table></div>
+    <p class="leise" style="margin-top:12px">Alle Meldungen sind im Klartext geschrieben. Für Rückfragen genügt ein Bildschirmfoto.</p>
+  </div>
+
+  <div class="karte">
+    <h2>Ein Ablefy-Konto wieder trennen</h2>
+    <p>Erst alle Kurse des Kontos löschen (Kursseite → ganz unten <em>Kurs löschen</em>), dann unter <em>Ablefy &amp; Kurse</em> das Konto aufklappen → <strong>Konto entfernen</strong>. Das Programm löscht dabei auch die Rückmeldung (Webhook), die es bei Ablefy angelegt hat. Bestätigt Ablefy das nicht, sagt die Oberfläche, wo du in Ablefy nachsehen musst (<em>Einstellungen → Integrationen → Webhooks</em>). Protokoll und Versandliste bleiben erhalten.</p>
+  </div>
+
+  <div class="karte">
+    <h2>Eine neue Version einspielen</h2>
+    <p>Das Programm läuft aus deiner Kopie bei GitHub (<code>bescheinigungs-automat-copy</code>); Cloudflare baut es bei jeder Änderung dort neu. Ein Update ist deshalb ein Datei-Upload:</p>
+    <ol>
+      <li>Unter „Einstellungen“ eine Sicherung herunterladen.</li>
+      <li>Das Update-ZIP entpacken — darin liegen nur einzelne Dateien, keine Ordner.</li>
+      <li>Auf github.com dein Verzeichnis <code>bescheinigungs-automat-copy</code> öffnen → <strong>Add file → Upload files</strong>.</li>
+      <li><em>Alle</em> Dateien aus dem entpackten Ordner ins Browserfenster ziehen. Gleichnamige Dateien werden ersetzt. <code>wrangler.toml</code> ist im Update absichtlich nicht enthalten und bleibt, wie sie ist.</li>
+      <li>Unten <strong>Commit changes</strong>. Ein, zwei Minuten später läuft die neue Fassung.</li>
+      <li>Hier unten auf der Seite nachsehen: die Versionsnummer muss die neue sein.</li>
+    </ol>
+    <p class="leise">Einstellungen, Zugangsdaten und Protokoll bleiben erhalten — sie liegen im Speicher, nicht im Code. Ist der Build danach rot mit „wrangler.toml wurde … ersetzt“, steht in der Meldung selbst, wie du es behebst.</p>
+  </div>
+
+  <div class="karte">
+    <h2>Die zwei Secrets im Cloudflare-Konto</h2>
+    <p>Zwei Werte liegen nicht hier, sondern bei Cloudflare unter <em>Workers &amp; Pages → dieses Programm → Settings → Abschnitt „Variables and Secrets“</em> (<strong>ganz oben</strong> auf der Seite — nicht die gleichnamige Liste weit unten unter „Builds“ mit dem Text „No build variables or secrets configured“, die sieht das Programm nie). Beide vom Typ „Secret“, Namen genau so:</p>
+    <table>
+      <tr><th>Name</th><th>Wozu</th><th>Ändern?</th></tr>
+      <tr><td><code>ADMIN_PASSWORT</code></td><td>Anmeldung hier, solange unter „Einstellungen“ kein eigenes Passwort gesetzt ist.</td><td>Jederzeit. Danach unter <em>Overview → Versions</em> prüfen, dass der blaue Balken auf dem neuesten Eintrag steht; sonst <em>Deployments</em> → oberste Zeile → drei Punkte (…) → <em>Promote version</em>.</td></tr>
+      <tr><td><code>DATEN_SCHLUESSEL</code></td><td>Verschlüsselt Ablefy-Schlüssel und Mail-Token im Speicher.</td><td><strong>Nie.</strong> Sonst sind alle gespeicherten Zugangsdaten unlesbar und müssen neu eingetragen werden.</td></tr>
+    </table>
+    <p class="leise">Cloudflare zeigt ein Secret nach dem Speichern nicht mehr an, nur ersetzen geht. Beide Werte deshalb im Passwortmanager aufheben. Fehlt eines, zeigt die Adresse des Programms statt der Anmeldung die Seite „Fast fertig“ mit dem Namen des fehlenden Werts.</p>
+  </div>
+
+  <div class="karte">
+    <h2>Passwort vergessen</h2>
+    <p>Im Cloudflare-Konto: <em>Storage &amp; Databases → KV</em> → Speicher dieses Programms öffnen → Eintrag <code>auth:passwort</code> löschen. Danach gilt wieder das Passwort aus der Installation (<code>ADMIN_PASSWORT</code>). Ist auch das unbekannt: unter <em>Workers &amp; Pages → dieses Programm → Settings → Variables and Secrets</em> das Secret <code>ADMIN_PASSWORT</code> neu setzen.</p>
+  </div>
+
+  <div class="karte">
+    <h2>Was das Programm nicht tut</h2>
+    <ul>
+      <li>Es prüft nicht, ob die ZPP-Zertifizierung des Kurses noch gültig ist.</li>
+      <li>Es prüft nicht, ob der Teilnehmer alle Einheiten vor dem Abschlussquiz durchgearbeitet hat — das steuert Ablefy (Drip-In, „Quiz muss bestanden werden, um fortzufahren“).</li>
+      <li>Es verwaltet keine Prämien, Erstattungen oder SEPA-Dateien.</li>
+      <li>Es liest keine Zusatzfelder aus dem Checkout; der Name auf der Bescheinigung ist der Käufername der Bestellung.</li>
+      <li>Es rät nie: Fehlt eine Angabe, wird nichts verschickt, und du bekommst eine Meldung.</li>
+    </ul>
+  </div>${fussHtml()}`;
+}
+
+/* ---------------- Rahmen ---------------- */
+
+function kopfHtml() {
+  const e = stand.einstellungen || {};
+  return `<div class="kopf">
+      <h1>Teilnahmebescheinigungen</h1>
+      <button class="knopf leiser" data-tu="logout">Abmelden</button>
+    </div>
+    ${DEMO ? '<div class="demoband">Vorführung mit Beispieldaten. Nichts hiervon wird gespeichert oder verschickt.</div>' : ''}
+    <nav>
+      ${e.assistentFertig ? '' : `<button data-gehe="assistent" aria-current="${seite === 'assistent'}">Einrichtung</button>`}
+      <button data-gehe="start" aria-current="${seite === 'start'}">Übersicht</button>
+      <button data-gehe="mail" aria-current="${seite === 'mail'}">Mailversand</button>
+      <button data-gehe="konten" aria-current="${seite === 'konten' || seite === 'kurs'}">Ablefy &amp; Kurse</button>
+      <button data-gehe="protokoll" aria-current="${seite === 'protokoll'}">Protokoll</button>
+      <button data-gehe="einstellungen" aria-current="${seite === 'einstellungen'}">Einstellungen</button>
+      <button data-gehe="hilfe" aria-current="${seite === 'hilfe'}">Hilfe</button>
+    </nav>`;
+}
+
+function fussHtml() {
+  return `<div class="fuss">Bescheinigungs-Automat · Version ${esc(stand.version || '')}</div>`;
+}
+
+function meldungHtml() {
+  if (!meldung) return '';
+  const art = meldung.art === 'fehler' ? 'fehler' : meldung.art === 'warn' ? 'warn' : 'gut';
+  const h = `<div class="hinweis ${art}">${esc(meldung.text)}</div>`;
+  meldung = null;
+  return h;
+}
+
+function zeichne() {
+  const w = $('#wurzel');
+  if (!stand) { w.innerHTML = zeichneLogin(); return; }
+  if (seite === 'assistent') w.innerHTML = zeichneAssistent();
+  else if (seite === 'start') w.innerHTML = zeichneStart();
+  else if (seite === 'mail') w.innerHTML = zeichneMail();
+  else if (seite === 'konten') w.innerHTML = zeichneKonten();
+  else if (seite === 'kurs') w.innerHTML = zeichneKurs();
+  else if (seite === 'einstellungen') w.innerHTML = zeichneEinstellungen();
+  else if (seite === 'hilfe') w.innerHTML = zeichneHilfe();
+  else if (seite === 'protokoll') w.innerHTML = kopfHtml() + '<div class="karte"><h2>Protokoll</h2>'
+    + protokollTabelle(stand.protokoll) + '</div>' + fussHtml();
+  if (seite === 'kurs') nachKursZeichnen(stand.kurse.find((x) => x.id === offenerKurs));
+  if (seite === 'assistent' && SCHRITTE[aSchritt].id === 'kurs' && aKurs()) nachKursZeichnen(aKurs());
+  window.scrollTo({ top: 0 });
+}
+
+/* Produkte und gesehene Quizze nachladen, sobald eine Kursseite steht. */
+async function nachKursZeichnen(k) {
+  if (!k) return;
+  try {
+    const { produkte } = await api('konto/produkte?kontoId=' + encodeURIComponent(k.kontoId));
+    const sel = $('#produkt');
+    if (sel) {
+      sel.innerHTML = '<option value="">— bitte wählen —</option>' + produkte.map((p) =>
+        `<option value="${esc(p.id)}" ${String(p.id) === String(k.produktId) ? 'selected' : ''}>${esc(p.name)}</option>`).join('');
+    }
+  } catch (e) {
+    const sel = $('#produkt');
+    if (sel) sel.innerHTML = `<option value="">Produkte nicht abrufbar: ${esc(e.message)}</option>`;
+  }
+  ladeGesehenListe(k);
+}
+
+async function ladeGesehenListe(k) {
+  const ziel = $('#gesehen');
+  if (!ziel) return;
+  const produktId = $('#produkt') && $('#produkt').value ? $('#produkt').value : k.produktId;
+  try {
+    const { gesehen } = await api('konto/gesehen?kontoId=' + encodeURIComponent(k.kontoId) + (produktId ? '&produktId=' + encodeURIComponent(produktId) : ''));
+    if (!gesehen.length) {
+      ziel.innerHTML = `<div class="zeile"><span class="leise">${produktId ? 'Für dieses Produkt wurde noch kein Quiz gemeldet.' : 'Noch kein Quiz gemeldet.'} Im Teilnehmer-Zugang die letzte Einheit öffnen, das Quiz beantworten, dann hier „Liste aktualisieren“.</span></div>`;
+      return;
+    }
+    ziel.innerHTML = gesehen.map((g) => {
+      const markiert = (k.quizze || []).some((q) => String(q.id) === String(g.quizId));
+      return `<div class="zeile">
+      <span><span class="haupt">${esc(g.quizName || 'Quiz ' + g.quizId)}</span>
+        ${g.pflicht ? '<span class="marke m-still" title="In Ablefy ist eingestellt, dass dieses Quiz bestanden werden muss, um fortzufahren">Pflicht zum Fortfahren</span>' : ''}<br>
+        <span class="leise">${g.produktName ? esc(g.produktName) + ' · ' : ''}${g.zeit ? 'zuletzt beantwortet ' + herKurz(g.zeit) : 'zuerst gesehen ' + zeitDe(g.zuerst)} · Kennung ${esc(g.quizId)}</span></span>
+      <button class="knopf ${markiert ? 'leiser' : ''}"
+        data-tu="quizwahl" data-id="${k.id}" data-quiz="${esc(g.quizId)}" data-quizname="${esc(g.quizName || '')}"
+        data-produkt="${esc(g.produktId)}" data-produktname="${esc(g.produktName || '')}" data-markiert="${markiert ? '1' : ''}">
+        ${markiert ? 'Markierung entfernen' : 'Als Abschlussquiz markieren'}</button>
+    </div>`;
+    }).join('');
+  } catch (e) {
+    ziel.innerHTML = `<div class="zeile"><span class="hinweis fehler">${esc(e.message)}</span></div>`;
+  }
+}
+
+/** Was gerade in den Feldern einer Kursseite steht — fehlende Felder behalten den alten Wert. */
+function kursAusFeldern(k) {
+  const v = (id, alt) => ($('#' + id) ? $('#' + id).value : alt);
+  const cb = (id, alt) => ($('#' + id) ? $('#' + id).checked : alt);
+  return {
+    id: k.id,
+    produktId: v('produkt', k.produktId),
+    produktName: $('#produkt') && $('#produkt').selectedOptions[0] && $('#produkt').value
+      ? $('#produkt').selectedOptions[0].textContent : k.produktName,
+    quizze: k.quizze || [],
+    titel: v('titel', k.titel),
+    zppKursId: v('zppkursid', k.zppKursId),
+    praeventionsprinzip: v('prinzip', k.praeventionsprinzip),
+    anbieterName: v('anbieter', k.anbieterName),
+    anbieterAdresse: v('adresse', k.anbieterAdresse),
+    ort: v('ort', k.ort),
+    mindestGebuehr: $('#mindest') ? Number(v('mindest', k.mindestGebuehr)) || 0 : k.mindestGebuehr,
+    unterschriftName: v('signame', k.unterschriftName),
+    eigenerAbsender: cb('cbeigen', k.eigenerAbsender),
+    absenderName: v('absname', k.absenderName),
+    absenderMail: v('absmail', k.absenderMail),
+    antwortAn: v('antwortan', k.antwortAn),
+    betreff: v('betreff', k.betreff),
+    mailText: v('mailtext', k.mailText),
+    testEmpfaenger: v('testempf', k.testEmpfaenger),
+    aktiv: cb('cbaktiv', k.aktiv),
+    testmodus: cb('cbtest', k.testmodus),
+  };
+}
+
+async function zeigeProbelauf(kursId, orderToken, ziel) {
+  const r = await api('kurs/probelauf', { id: kursId, orderToken });
+  if (!r.ok) { meldung = { text: (r.grund || r.ergebnis), art: 'warn' }; return false; }
+  probeVorschau[kursId] = `<div class="hinweis gut">Bescheinigung für <strong>${esc(r.name)}</strong>, Gebühr ${esc(String(r.gebuehr).replace('.', ','))} €. Sie wäre an ${esc(r.an)} gegangen.</div>
+    <iframe class="pdfrahmen" src="data:application/pdf;base64,${r.pdf}"></iframe>
+    <h3 style="margin-top:18px">Die Mail dazu</h3>
+    <div class="karte" style="background:var(--grund)">
+    <div class="leise">Von: ${esc(r.absender?.absenderName || '')} &lt;${esc(r.absender?.absenderMail || '—')}&gt;${r.absender?.antwortAn ? ' · Antworten an ' + esc(r.absender.antwortAn) : ''}</div>
+    <strong>${esc(r.mailBetreff)}</strong>
+    <div style="white-space:pre-wrap;margin-top:8px">${esc(r.mailText)}</div></div>`;
+  if (ziel) ziel.innerHTML = probeVorschau[kursId];
+  meldung = null;
+  return true;
+}
+
+/* ---------------- Klicks ---------------- */
+
+document.addEventListener('click', async (ev) => {
+  const el = ev.target.closest('[data-tu],[data-gehe],[data-kurs],[data-a]');
+  if (!el) return;
+
+  // Seitenwechsel holt immer den aktuellen Stand — Webhooks laufen im Hintergrund weiter.
+  if (el.dataset.gehe) { seite = el.dataset.gehe; try { await ladeStand(); } catch {} zeichne(); return; }
+  if (el.dataset.kurs) { offenerKurs = el.dataset.kurs; seite = 'kurs'; try { await ladeStand(); } catch {} zeichne(); return; }
+
+  /* Assistent */
+  if (el.dataset.a) {
+    const a = el.dataset.a;
+    if (a === 'zurueck') return mitLaden(el, async () => { await merkeSchritt(Math.max(0, aSchritt - 1)); });
+    if (a === 'weiter') return mitLaden(el, async () => { await merkeSchritt(Math.min(SCHRITTE.length - 1, aSchritt + 1)); });
+    if (a === 'pause') { seite = 'start'; return zeichne(); }
+    if (a === 'abschliessen') {
+      return mitLaden(el, async () => {
+        await api('einstellungen/assistent', { fertig: true, kursId: '' });
+        await ladeStand(); seite = 'start';
+      });
+    }
+    if (a === 'pruefen') {
+      const s = ASSISTENT[SCHRITTE[aSchritt].id]();
+      return mitLaden(el, async () => {
+        const weiter = s.pruefen ? await s.pruefen() : true;
+        if (weiter) await merkeSchritt(Math.min(SCHRITTE.length - 1, aSchritt + 1));
+      });
+    }
+    return;
+  }
+
+  const tu = el.dataset.tu;
+  const id = el.dataset.id;
+
+  if (tu === 'login') {
+    return mitLaden(el, async () => {
+      await api('login', { passwort: $('#pw').value });
+      await ladeStand();
+      startseite();
+    });
+  }
+  if (tu === 'logout') { await api('logout'); stand = null; return zeichne(); }
+
+  if (tu === 'wiederholen') {
+    return mitLaden(el, async () => {
+      const r = await api('wiederholen');
+      await ladeStand();
+      meldung = { text: r.anzahl ? 'Erneut versucht. Was noch offen ist, steht weiter oben.' : 'Es wartet nichts mehr.', art: 'ok' };
+    });
+  }
+
+  if (tu === 'mailspeichern') {
+    return mitLaden(el, async () => {
+      await api('mail/speichern', {
+        anbieter: $('#anbieter').value,
+        token: $('#token').value || undefined,
+        mailboxId: $('#mailboxid') ? $('#mailboxid').value : '',
+        warnAn: $('#warnan').value,
+        absenderName: $('#absname').value,
+        absenderMail: $('#absmail').value,
+        antwortAn: $('#antwortan').value,
+        standardFuerKurse: $('#cbstandard').checked,
+      });
+      await ladeStand();
+      meldung = { text: stand.mail.geprueft ? 'Gespeichert.' : 'Gespeichert. Jetzt bitte eine Testmail schicken.', art: 'ok' };
+    });
+  }
+  if (tu === 'mailtest') {
+    return mitLaden(el, async () => {
+      const r = await api('mail/test', { an: $('#warnan').value });
+      await ladeStand();
+      meldung = { text: 'Testmail ist an ' + r.an + ' unterwegs. Wenn sie nicht ankommt, auch in den Spam schauen.', art: 'ok' };
+    });
+  }
+
+  if (tu === 'kontoanlegen') {
+    return mitLaden(el, async () => {
+      const r = await api('konto/anlegen', {
+        name: $('#kname').value, schluessel: $('#kkey').value, secret: $('#ksec').value,
+      });
+      await ladeStand();
+      meldung = r.webhookFehler
+        ? { text: 'Konto verbunden, aber die Rückmeldung bei Ablefy ließ sich nicht einrichten: ' + r.webhookFehler, art: 'warn' }
+        : { text: `Verbunden: ${r.produkte.length} Produkte gefunden, Rückmeldung bei Ablefy eingerichtet.`, art: 'ok' };
+    });
+  }
+  if (tu === 'kontoname') {
+    return mitLaden(el, async () => {
+      await api('konto/umbenennen', { kontoId: id, name: $('#kname-' + id).value });
+      await ladeStand(); meldung = { text: 'Umbenannt.', art: 'ok' };
+    });
+  }
+  if (tu === 'kontoschluessel') {
+    return mitLaden(el, async () => {
+      const r = await api('konto/schluessel', { kontoId: id, schluessel: $('#kkey-' + id).value, secret: $('#ksec-' + id).value });
+      await ladeStand(); meldung = { text: `Schlüssel ersetzt und geprüft — ${r.produkte} Produkte gefunden.`, art: 'ok' };
+    });
+  }
+  if (tu === 'webhookneu') {
+    return mitLaden(el, async () => { await api('konto/webhook-neu', { kontoId: id });
+      await ladeStand(); meldung = { text: 'Rückmeldung bei Ablefy neu eingetragen.', art: 'ok' }; });
+  }
+  if (tu === 'kontopruefen') {
+    return mitLaden(el, async () => {
+      const r = await api('konto/pruefen', { kontoId: id });
+      meldung = r.webhookVorhanden
+        ? { text: 'Die Rückmeldung ist bei Ablefy eingetragen.', art: 'ok' }
+        : { text: 'Bei Ablefy ist diese Rückmeldung nicht mehr eingetragen. Bitte „Neu eintragen“ klicken.', art: 'warn' };
+    });
+  }
+  if (tu === 'kontoweg') {
+    if (!confirm('Dieses Ablefy-Konto entfernen?\n\nDas Programm löscht dabei auch die Rückmeldung (Webhook), die es bei Ablefy angelegt hat. Bescheinigungen, die aus diesem Konto schon verschickt wurden, bleiben im Protokoll.')) return;
+    return mitLaden(el, async () => {
+      const r = await api('konto/loeschen', { kontoId: id });
+      await ladeStand();
+      meldung = !r.hatteWebhook || r.webhookEntfernt
+        ? { text: `Konto „${r.name}“ entfernt.`, art: 'ok' }
+        : { text: `Konto „${r.name}“ hier entfernt — aber Ablefy hat das Löschen der Rückmeldung nicht bestätigt. Bitte in Ablefy nachsehen: Einstellungen → Integrationen → Webhooks → den Eintrag „Teilnahmebescheinigung (${r.name})“ löschen. Sonst schickt Ablefy weiter Meldungen ins Leere.`, art: 'warn' };
+    });
+  }
+
+  if (tu === 'kursneu') {
+    return mitLaden(el, async () => {
+      const r = await api('kurs/anlegen', { kontoId: id });
+      await ladeStand(); offenerKurs = r.kurs.id; seite = 'kurs';
+    });
+  }
+  if (tu === 'kursgefuehrt') {
+    return mitLaden(el, async () => {
+      const n = SCHRITTE.findIndex((s) => s.id === 'kurs');
+      await api('einstellungen/assistent', { fertig: false, schritt: n, kursId: '' });
+      await ladeStand(); seite = 'assistent';
+    });
+  }
+  if (tu === 'assistentneu') {
+    return mitLaden(el, async () => {
+      await api('einstellungen/assistent', { fertig: false, schritt: 0, kursId: '' });
+      await ladeStand(); seite = 'assistent';
+    });
+  }
+  if (tu === 'produkteladen' || tu === 'gesehenladen') {
+    // Bewusst ohne Neuzeichnen — sonst ginge die Produktauswahl verloren.
+    const k = stand.kurse.find((x) => x.id === id);
+    el.disabled = true;
+    try { tu === 'produkteladen' ? await nachKursZeichnen(k) : await ladeGesehenListe(k); }
+    finally { el.disabled = false; }
+    return;
+  }
+  if (tu === 'quizwahl') {
+    const k = stand.kurse.find((x) => x.id === id);
+    const name = el.dataset.quizname || 'Quiz ' + el.dataset.quiz;
+    const entfernen = el.dataset.markiert === '1';
+    if (!entfernen && !confirm(`„${name}“ als Abschlussquiz markieren?\n\nGehört dieses Quiz zur letzten Einheit des Kurses? Die Bescheinigung wird verschickt, sobald ein Teilnehmer es besteht.`)) return;
+    const quizze = entfernen
+      ? (k.quizze || []).filter((q) => String(q.id) !== String(el.dataset.quiz))
+      : [...(k.quizze || []), { id: el.dataset.quiz, name: el.dataset.quizname || '' }];
+    return mitLaden(el, async () => {
+      const r = await api('kurs/speichern', { kurs: { ...kursAusFeldern(k), quizze,
+        produktId: $('#produkt') && $('#produkt').value ? $('#produkt').value : (k.produktId || el.dataset.produkt),
+        produktName: $('#produkt') && $('#produkt').value ? $('#produkt').selectedOptions[0].textContent : (k.produktName || el.dataset.produktname) } });
+      await ladeStand();
+      meldung = entfernen
+        ? { text: 'Markierung entfernt.', art: 'ok' }
+        : { text: `Als Abschlussquiz markiert: ${name}.` + (r.kurs.quizze.length > 1 ? ` Der Kurs hat jetzt ${r.kurs.quizze.length} Abschlussquizze — die Bescheinigung geht erst raus, wenn alle bestanden sind.` : ''), art: 'ok' };
+    });
+  }
+  if (tu === 'warnungja' || tu === 'warnungnein') {
+    return mitLaden(el, async () => {
+      await api('kurs/warnung', { id, uebernehmen: tu === 'warnungja' });
+      await ladeStand();
+      meldung = { text: tu === 'warnungja' ? 'Übernommen. Das neue Quiz löst ab jetzt die Bescheinigung aus.' : 'Hinweis ausgeblendet. Das bisherige Abschlussquiz gilt weiter.', art: 'ok' };
+    });
+  }
+  if (tu === 'kursspeichern') {
+    const k = stand.kurse.find((x) => x.id === id);
+    return mitLaden(el, async () => {
+      await api('kurs/speichern', { kurs: kursAusFeldern(k) });
+      await ladeStand();
+      meldung = { text: 'Gespeichert.', art: 'ok' };
+    });
+  }
+  if (tu === 'kursweg') {
+    if (!confirm('Kurs wirklich löschen?')) return;
+    return mitLaden(el, async () => { await api('kurs/loeschen', { id }); await ladeStand(); seite = 'start'; });
+  }
+  if (tu === 'sigweg') {
+    return mitLaden(el, async () => { await api('kurs/unterschrift', { id, entfernen: true }); await ladeStand(); });
+  }
+
+  if (tu === 'probelauf') {
+    const ziel = $('#probeergebnis');
+    return mitLaden(el, async () => {
+      await zeigeProbelauf(id, $('#probeorder').value, ziel);
+      const alt = meldung; await ladeStand(); meldung = alt;
+    });
+  }
+  if (tu === 'nachholen') {
+    return mitLaden(el, async () => {
+      const r = await api('kurs/nachholen', { id, orderToken: $('#nachorder').value, erneut: $('#cberneut').checked });
+      await ladeStand();
+      meldung = { text: r.ok ? 'Verschickt an ' + r.an : 'Nicht verschickt: ' + (r.grund || r.ergebnis),
+        art: r.ok ? 'ok' : 'warn' };
+    });
+  }
+
+  if (tu === 'passwort') {
+    return mitLaden(el, async () => {
+      if ($('#pwneu').value !== $('#pwneu2').value) throw new Error('Die beiden neuen Passwörter sind nicht gleich.');
+      await api('einstellungen/passwort', { altes: $('#pwalt').value, neues: $('#pwneu').value });
+      await ladeStand();
+      meldung = { text: 'Passwort geändert.', art: 'ok' };
+    });
+  }
+  if (tu === 'sicherungdemo') { meldung = { text: 'In der Vorführung wird nichts heruntergeladen.', art: 'warn' }; return zeichne(); }
+  if (tu === 'sicherungimport') {
+    const datei = $('#sicherungdatei').files[0];
+    if (!datei) { meldung = { text: 'Bitte zuerst eine Sicherungsdatei auswählen.', art: 'warn' }; return zeichne(); }
+    if (!confirm('Alles, was gerade eingetragen ist, wird durch die Sicherung ersetzt. Weiter?')) return;
+    return mitLaden(el, async () => {
+      const text = await datei.text();
+      let sicherung;
+      try { sicherung = JSON.parse(text); } catch { throw new Error('Die Datei lässt sich nicht lesen. Ist es die richtige .json?'); }
+      const r = await api('sicherung/import', { sicherung });
+      await ladeStand();
+      const fehlt = [];
+      if (r.ohneZugang?.length) fehlt.push('Ablefy-Schlüssel für ' + r.ohneZugang.join(', '));
+      if (r.mailTokenFehlt) fehlt.push('der Schlüssel des Versanddienstes');
+      meldung = { text: `Eingespielt: ${r.konten} Konten, ${r.kurse} Kurse, ${r.sperren} Versandsperren.` + (fehlt.length ? ' Jetzt neu eintragen: ' + fehlt.join(' und ') + '.' : ''), art: fehlt.length ? 'warn' : 'ok' };
+    });
+  }
+});
+
+/* Änderungen an Auswahlfeldern und Dateien */
+document.addEventListener('change', async (ev) => {
+  if (ev.target.id === 'anbieter') {
+    const hf = $('#hostingerfeld');
+    if (hf) hf.style.display = ev.target.value === 'hostinger' ? 'block' : 'none';
+    return;
+  }
+  if (ev.target.id === 'cbeigen') {
+    const f = $('#eigenfelder');
+    if (f) f.style.display = ev.target.checked ? 'block' : 'none';
+    return;
+  }
+  if (ev.target.id !== 'sigdatei' || !ev.target.files[0]) return;
+  const kursId = seite === 'assistent' ? aKurs()?.id : offenerKurs;
+  const leser = new FileReader();
+  leser.onload = async () => {
+    try {
+      await api('kurs/unterschrift', { id: kursId, datenUrl: leser.result });
+      await ladeStand();
+      meldung = { text: 'Unterschrift gespeichert.', art: 'ok' };
+    } catch (e) { meldung = { text: e.message, art: 'fehler' }; }
+    zeichne();
+  };
+  leser.readAsDataURL(ev.target.files[0]);
+});
+
+document.addEventListener('keydown', (ev) => {
+  if (ev.key === 'Enter' && ev.target.id === 'pw') document.querySelector('[data-tu="login"]').click();
+});
+
+/* ---------------- Start ---------------- */
+(async () => {
+  try { await ladeStand(); startseite(); } catch { stand = null; }
+  zeichne();
+})();
+</script>
+</body>
+</html>

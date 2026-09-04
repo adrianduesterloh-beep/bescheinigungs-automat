@@ -1,0 +1,18 @@
+{
+  "name": "bescheinigungs-automat",
+  "version": "1.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "predeploy": "node pruefe-vor-deploy.mjs",
+    "deploy": "wrangler deploy",
+    "probe": "wrangler deploy --dry-run"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

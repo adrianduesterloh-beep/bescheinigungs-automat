@@ -1,0 +1,35 @@
+name = "bescheinigungs-automat"
+main = "index.js"
+compatibility_date = "2026-08-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Keine Vorschau-URLs: das Programm soll nur unter einer Adresse erreichbar sein.
+preview_urls = false
+
+# Das leere GKV-Formular und die Oberfläche werden mit eingepackt.
+[[rules]]
+type = "Data"
+globs = ["**/*.pdf"]
+fallthrough = true
+
+[[rules]]
+type = "Text"
+globs = ["**/*.html"]
+fallthrough = true
+
+# Alle 15 Minuten wird wiederholt, was beim ersten Versuch an einer
+# vorübergehenden Störung gescheitert ist.
+[triggers]
+crons = ["*/15 * * * *"]
+
+# Speicher für Konfiguration, Protokoll und Doppelversand-Sperre.
+# Beim Deploy über den Cloudflare-Knopf wird dieser Speicher automatisch angelegt.
+[[kv_namespaces]]
+binding = "SPEICHER"
+id = "hier_traegt_cloudflare_die_kennung_ein"
+
+# Zwei Passwörter, die beim Deploy abgefragt werden — siehe .dev.vars.example:
+#   ADMIN_PASSWORT     schützt die Bedienoberfläche
+#   DATEN_SCHLUESSEL   verschlüsselt Ablefy-Schlüssel und Mail-Token im Speicher
+#
+# Alles Weitere wird in der Oberfläche eingetragen, nicht hier.
