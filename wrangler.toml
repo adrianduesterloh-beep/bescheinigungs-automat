@@ -3,6 +3,10 @@ main = "index.js"
 compatibility_date = "2026-08-01"
 compatibility_flags = ["nodejs_compat"]
 
+# Öffentliche Adresse <name>.<konto>.workers.dev einschalten — ohne diese Zeile
+# bleibt sie nach der Installation über den Link manchmal aus ("No URLs enabled").
+workers_dev = true
+
 # Keine Vorschau-URLs: das Programm soll nur unter einer Adresse erreichbar sein.
 preview_urls = false
 
