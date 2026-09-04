@@ -42,8 +42,23 @@ const ERKLAERUNG_SECRET = {
     'Damit verschlüsselt das Programm deine Ablefy-Schlüssel und den Mail-Token, bevor es sie speichert. Ein langes, ausgedachtes Wort, mindestens 30 Zeichen, zum Beispiel <code>Regenschirm-Kaktus-Fahrrad-Lampe-2026-Sommer</code>. <strong>Einmal setzen, nie wieder ändern</strong> — sonst kann das Programm die gespeicherten Zugangsdaten nicht mehr lesen.',
 };
 
+/**
+ * Werte, die als Beispiel in .dev.vars.example standen oder offensichtlich
+ * nur Platzhalter sind. Wer sie beim Installieren stehen lässt, hätte ein
+ * Passwort, das öffentlich im Vorlagen-Verzeichnis steht.
+ */
+const BEISPIELWERTE = new Set([
+  'hier-ein-eigenes-passwort',
+  'hier-ein-langes-zufallswort-mindestens-30-zeichen',
+  'hier-ein-passwort',
+  'passwort',
+  'password',
+]);
+const istUnbrauchbar = (wert) => !wert || BEISPIELWERTE.has(String(wert).trim().toLowerCase());
+
 const HINWEIS_SEITE = (env) => {
-  const fehlend = ['DATEN_SCHLUESSEL', 'ADMIN_PASSWORT'].filter((n) => !env[n]);
+  const fehlend = ['DATEN_SCHLUESSEL', 'ADMIN_PASSWORT'].filter((n) => istUnbrauchbar(env[n]));
+  const beispiel = fehlend.filter((n) => env[n]);
   const zeilen = fehlend
     .map((n) => `<li style="margin-bottom:.8rem"><code style="font-size:1.05em;background:#f1f3f5;padding:.1em .4em;border-radius:4px">${n}</code><br>${ERKLAERUNG_SECRET[n]}</li>`)
     .join('');
@@ -53,6 +68,7 @@ const HINWEIS_SEITE = (env) => {
 <body style="font-family:system-ui,sans-serif;max-width:38rem;margin:3rem auto;padding:0 1.5rem;line-height:1.6;color:#222">
 <h1 style="font-size:1.4rem">Fast fertig</h1>
 <p>Das Programm läuft. ${fehlend.length === 1 ? 'Es fehlt noch ein Wert, der' : 'Es fehlen noch zwei Werte, die'} nur in deinem Cloudflare-Konto ${fehlend.length === 1 ? 'liegt' : 'liegen'} — Cloudflare nennt so etwas <em>Secret</em>:</p>
+${beispiel.length ? `<p style="background:#fdf6e3;border:1px solid #e0b45c;border-radius:6px;padding:.6rem .9rem"><strong>${beispiel.join(' und ')}</strong> ${beispiel.length === 1 ? 'ist' : 'sind'} noch auf dem Beispielwert aus der Installation. Der steht öffentlich im Vorlagen-Verzeichnis und ist deshalb unbrauchbar — bitte durch ${beispiel.length === 1 ? 'einen eigenen Wert' : 'eigene Werte'} ersetzen.</p>` : ''}
 <ul style="padding-left:1.2rem">${zeilen}</ul>
 <h2 style="font-size:1.1rem;margin-top:1.6rem">So trägst du ${fehlend.length === 1 ? 'ihn' : 'sie'} ein</h2>
 <ol style="padding-left:1.2rem">
@@ -97,7 +113,7 @@ export default {
     }
 
     // Ohne diese beiden Werte kann nichts sicher gespeichert werden.
-    if (!env.DATEN_SCHLUESSEL || !env.ADMIN_PASSWORT) return html(HINWEIS_SEITE(env), 503);
+    if (istUnbrauchbar(env.DATEN_SCHLUESSEL) || istUnbrauchbar(env.ADMIN_PASSWORT)) return html(HINWEIS_SEITE(env), 503);
 
     if (url.pathname.startsWith('/api/')) return adminApi(env, request, url);
 

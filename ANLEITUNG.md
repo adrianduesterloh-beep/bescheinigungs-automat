@@ -63,7 +63,8 @@ Cloudflare deine private Kopie des Programms ab) und eines bei
 ### 1a. Konten anlegen
 
 1. **github.com** → *Sign up*. E-Mail bestätigen. Mehr musst du bei GitHub
-   nie tun — kein Hochladen, keine Einstellungen.
+   für die Installation nicht tun — kein Hochladen, keine Einstellungen.
+   (Erst bei einem späteren Update ziehst du dort einmal Dateien hinein.)
 2. **cloudflare.com** → *Sign up*. E-Mail bestätigen. Der kostenlose Tarif
    reicht; eine Kreditkarte wird nicht verlangt.
 
@@ -79,12 +80,18 @@ https://deploy.workers.cloudflare.com/?url=https://github.com/adrianduesterloh-b
 2. **Connect GitHub** bzw. **Authorize** — damit darf Cloudflare die Kopie in
    deinem GitHub anlegen. Der Haken *Create private Git repository* darf
    gesetzt bleiben.
-3. Namen für Verzeichnis und Programm: **so lassen**. Cloudflare hängt ein
-   `-copy` an — das ist richtig so.
-4. Möglicherweise fragt Cloudflare hier nach zwei Werten namens
-   `ADMIN_PASSWORT` und `DATEN_SCHLUESSEL`. Was du einträgst, steht unter
-   1c. Fragt es nicht, ist das kein Fehler — dann trägst du sie in 1c ein.
-5. **Create and deploy** (bzw. **Deploy**) klicken. Cloudflare legt jetzt
+3. Die Seite „Create an app": **Project name** so lassen (Cloudflare hängt
+   ein `-copy` an, das ist richtig so), **Select KV namespace** auf
+   *Create new* lassen, den vorgeschlagenen Namen darunter auch.
+4. Darunter stehen zwei leere Felder **`ADMIN_PASSWORT`** und
+   **`DATEN_SCHLUESSEL`**. Dort deine eigenen Werte eintragen — was
+   hineingehört, steht in der Tabelle unter 1c (kurz: ein Passwort deiner
+   Wahl; ein langes ausgedachtes Wort, das du nie wieder änderst). Beide
+   Werte sofort in den Passwortmanager. **Stehen in einem Feld schon
+   Punkte, ist das ein Beispielwert, der öffentlich ist — Feld leeren und
+   eigenen Wert eintippen.** Fehlen die Felder ganz, ist das kein Fehler —
+   dann trägst du die Werte in 1c ein.
+5. Unten rechts **Deploy** klicken. Cloudflare legt jetzt
    Kopie und Speicher an und baut das Programm — ein bis zwei Minuten.
    Fertig ist es, wenn ein grüner Haken erscheint und eine Adresse, die auf
    `.workers.dev` endet.
@@ -153,7 +160,12 @@ steht, ist immer diese Seite gemeint. Alles Weitere passiert dort: die
 Einrichtung, die Kurse, das Protokoll, die Hilfe.
 
 Erscheint stattdessen **„Fast fertig"**: zurück zu 1c, der Name auf der
-Seite sagt, welcher Wert fehlt. Nach dem Eintragen die Seite neu laden.
+Seite sagt, welcher Wert fehlt oder noch ein Beispielwert ist. Nach dem
+Eintragen die Seite neu laden.
+
+Steht auf der Übersichtsseite oben **„No URLs enabled"** und rechts bei
+*workers.dev* **Disabled**: Reiter **Settings → Domains & Routes** → bei
+**workers.dev** auf **Enable**. Danach steht die Adresse dort.
 
 > Lege dir sofort ein Lesezeichen an.
 >

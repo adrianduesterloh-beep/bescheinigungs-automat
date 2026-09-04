@@ -22,6 +22,13 @@ eingetragen hat). Wird sie doch überschrieben, bricht der Build mit einer
 Meldung ab, die den Reparaturweg in vier Schritten nennt — statt eines
 Cloudflare-Fehlercodes.
 
+**Beispielwerte werden abgewiesen.** Der Installationsdialog von Cloudflare
+fragt die zwei Secrets jetzt ab (Felder leer). Wer trotzdem einen der
+Beispielwerte aus der Vorlage stehen lässt, bekommt „Fast fertig“ mit dem
+Hinweis, dass der Wert öffentlich ist und ersetzt werden muss. Die Adresse
+`….workers.dev` wird nach der Installation von selbst eingeschaltet
+(`workers_dev = true`); falls nicht, steht der Klickweg in der Anleitung.
+
 **Konto entfernen räumt bei Ablefy mit auf.** Beim Entfernen eines
 Ablefy-Kontos löscht das Programm jetzt auch den Webhook, den es dort angelegt
 hat, und sagt, wenn Ablefy das nicht bestätigt. Vorher blieb der Webhook
