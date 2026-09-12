@@ -7,5 +7,5 @@
  * auf jeder Seite — so sieht der Betreiber nach einem Update sofort, ob die
  * neue Fassung schon läuft.
  */
-export const VERSION = '1.2.0';
+export const VERSION = '1.2.1';
 export const PROGRAMM = 'bescheinigungs-automat';

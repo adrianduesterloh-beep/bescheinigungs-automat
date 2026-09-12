@@ -131,7 +131,9 @@ erledigt — weiter mit 1d. Sonst so:
    **Variable name:** `ADMIN_PASSWORT` — **Value:** dein Passwort.
 4. Noch einmal **Add**, wieder Type **Secret**.
    **Variable name:** `DATEN_SCHLUESSEL` — **Value:** dein langes Wort.
-5. Auf **Save** (in manchen Versionen **Deploy**) klicken.
+5. Auf **Deploy** klicken — **nicht „Save version"**. „Save version" legt
+   nur eine Version an, die nie live geht; das Programm sieht das Secret
+   dann nicht und die Anmeldung schlägt fehl.
 6. **Prüfen, ob die Werte auch aktiv sind.** Reiter **Overview** → Kasten
    **Versions**: Der blaue Balken links markiert die Version, die läuft. Steht
    er auf dem obersten Eintrag „Add secret: …", ist alles gut. Steht er
@@ -385,12 +387,23 @@ warten will, klickt dort auf *Jetzt sofort noch einmal versuchen*.
 
 ## Einstellungen
 
-**Passwort ändern.** Unter *Einstellungen*: bisheriges Passwort, neues
-zweimal. Ab dann gilt das neue; das aus der Installation nicht mehr.
+**Passwort ändern.** Unter *Einstellungen*: bisheriges Passwort, dann das
+neue. Das neue Feld zeigt den Text sichtbar an — mit Absicht: so schleicht
+sich kein Tippfehler ein, und der Browser bietet kein selbst erzeugtes
+Passwort an, das du nachher nicht kennst. Lehne einen solchen Vorschlag ab,
+falls er doch erscheint. Ab dann gilt nur das neue Passwort; das aus der
+Installation nicht mehr. Leg es in den Passwortmanager.
 
-**Passwort vergessen.** Im Cloudflare-Konto unter *Storage & Databases → KV*
-den Speicher des Programms öffnen und den Eintrag `auth:passwort` löschen.
-Danach gilt wieder das Passwort aus der Installation (`ADMIN_PASSWORT`).
+**Passwort vergessen.** Im Cloudflare-Konto: *Workers & Pages → dein
+Programm → Settings → Variables and Secrets* (die Liste ganz oben, nicht die
+unter „Builds“) → Stift-Symbol bei `ADMIN_PASSWORT` → **Rotate** → neuen
+Wert eintragen → **Deploy**. Nicht „Save version“ — das legt nur eine
+Version an, die nie live geht, und der Worker behält das alte Secret. Zur
+Kontrolle *Deployments* öffnen: die oberste Version muss 100 % haben; sonst
+drei Punkte (…) → *Promote version*. Ab da meldest du dich mit dem neuen
+Secret an. Ein früher in der Oberfläche gesetztes Passwort ist
+damit aufgehoben — das Programm merkt, dass das Secret ein anderes ist.
+Deine Konten, Kurse und das Protokoll bleiben unberührt.
 
 **Sicherung.** Einmal im Monat und vor jedem Update: *Einstellungen →
 Sicherung herunterladen*. Die Datei enthält Konten, Kurse, Unterschriften,

@@ -170,7 +170,7 @@ async function verarbeite(env, konto, f) {
 
 /**
  * @returns {{ergebnis:string, grund?:string, an?:string, name?:string,
- *            gebuehr?:number, pdf?:Uint8Array}}
+ *            gebuehr?:number, pdf?:Uint8Array, mailId?:string}}
  */
 export async function stelleAus(env, kurs, orderToken, { trocken = false } = {}) {
   try {
@@ -256,8 +256,9 @@ export async function stelleAus(env, kurs, orderToken, { trocken = false } = {})
       anbieter: kurs.anbieterName,
     };
 
+    let mailId;
     try {
-      await sendeMail(versand, {
+      const antwort = await sendeMail(versand, {
       an: anEcht,
       betreff: (kurs.testmodus ? '[TEST] ' : '') + kurs.betreff,
       html:
@@ -269,6 +270,7 @@ export async function stelleAus(env, kurs, orderToken, { trocken = false } = {})
       antwortAn: absender.antwortAn,
       anhang: { name: dateiname(person.vorname, person.nachname), bytes: pdf },
       });
+      mailId = antwort?.id;
     } catch (e) {
       // Der Versand ist gescheitert, die Bescheinigung ist also NICHT draußen.
       // Sperre wieder lösen, sonst blockiert sie jeden weiteren Versuch.
@@ -281,6 +283,7 @@ export async function stelleAus(env, kurs, orderToken, { trocken = false } = {})
       an: anEcht,
       name: `${person.vorname} ${person.nachname}`.trim(),
       gebuehr,
+      mailId,
     };
   } catch (e) {
     return { ergebnis: 'fehler', grund: String(e?.message || e) };
@@ -376,6 +379,8 @@ export async function wiederhole(env) {
         ergebnis: ergebnis.ergebnis === 'übersprungen' ? 'übersprungen' : 'verschickt',
         grund: ergebnis.ergebnis === 'übersprungen' ? ergebnis.grund : `nach ${versuche}. Versuch`,
         an: ergebnis.an,
+        name: ergebnis.name,
+        mailId: ergebnis.mailId,
       });
       continue;
     }

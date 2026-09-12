@@ -335,8 +335,14 @@ export async function speichereEinstellungen(env, teil) {
  *
  * Beim Deploy kommt das Passwort als Secret ADMIN_PASSWORT. Ändert der
  * Betreiber es in der Oberfläche, liegt ab dann ein PBKDF2-Hash hier im
- * Speicher und das Secret zählt nicht mehr. Passwort vergessen: den Eintrag
- * auth:passwort im KV-Speicher löschen, dann gilt wieder das Secret.
+ * Speicher — zusammen mit einem Fingerabdruck des Secrets, das zu dem
+ * Zeitpunkt galt. Solange das Secret dasselbe ist, zählt nur der Hash.
+ * Setzt der Betreiber das Secret in Cloudflare neu, passt der Fingerabdruck
+ * nicht mehr: dann gilt wieder das Secret, und der Hash wird beim nächsten
+ * Anmeldeversuch entfernt. Passwort vergessen heißt also: Secret neu setzen.
+ *
+ * Einträge aus 1.1/1.2 ("v1:") haben keinen Fingerabdruck. Bei denen gelten
+ * Hash UND Secret, bis das Passwort einmal neu gesetzt wird.
  * ------------------------------------------------------------------ */
 
 const PBKDF2_RUNDEN = 100000; // Obergrenze auf Cloudflare Workers
@@ -353,30 +359,61 @@ async function pbkdf2(passwort, salt) {
   return b64(bits);
 }
 
-export async function setzePasswort(env, passwort) {
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const hash = await pbkdf2(passwort, salt);
-  await env.SPEICHER.put(PASSWORT, `v1:${b64(salt)}:${hash}`);
-}
-
-export async function hatEigenesPasswort(env) {
-  return Boolean(await env.SPEICHER.get(PASSWORT));
+/** Kurzer Fingerabdruck des Secrets — verrät nichts, erkennt aber eine Änderung. */
+async function secretFingerabdruck(env) {
+  const hash = await crypto.subtle.digest('SHA-256', enc.encode(`fp:${env.ADMIN_PASSWORT || ''}`));
+  return b64(hash).slice(0, 16);
 }
 
 /**
- * Stimmt das Passwort? Zuerst gegen den Hash im Speicher, sonst gegen das
- * Secret aus dem Deploy. Vergleich in konstanter Zeit über HMAC — die Länge
- * des Passworts soll nichts verraten.
+ * Liest den Eintrag und sagt, ob er noch zählt.
+ * @returns {null | {salt:Uint8Array, hash:string, auchSecret:boolean}}
+ */
+async function ladePasswortEintrag(env) {
+  const roh = await env.SPEICHER.get(PASSWORT);
+  if (!roh) return null;
+  const teile = roh.split(':');
+  if (teile[0] === 'v1' && teile.length === 3) {
+    return { salt: vonB64(teile[1]), hash: teile[2], auchSecret: true };
+  }
+  if (teile[0] === 'v2' && teile.length === 4) {
+    if (teile[3] !== (await secretFingerabdruck(env))) {
+      // Secret wurde neu gesetzt → das Oberflächen-Passwort ist damit aufgehoben.
+      await env.SPEICHER.delete(PASSWORT);
+      return null;
+    }
+    return { salt: vonB64(teile[1]), hash: teile[2], auchSecret: false };
+  }
+  // Unbekanntes Format: lieber weg damit, sonst sperrt es dauerhaft aus.
+  await env.SPEICHER.delete(PASSWORT);
+  return null;
+}
+
+export async function setzePasswort(env, passwort) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const hash = await pbkdf2(passwort, salt);
+  const fp = await secretFingerabdruck(env);
+  await env.SPEICHER.put(PASSWORT, `v2:${b64(salt)}:${hash}:${fp}`);
+}
+
+export async function hatEigenesPasswort(env) {
+  return Boolean(await ladePasswortEintrag(env));
+}
+
+/**
+ * Stimmt das Passwort? Gegen den Hash im Speicher, wenn er noch zählt;
+ * sonst (oder bei alten Einträgen zusätzlich) gegen das Secret aus dem
+ * Deploy. Vergleich in konstanter Zeit — die Länge soll nichts verraten.
  */
 export async function passwortStimmt(env, eingabe) {
-  const gespeichert = await env.SPEICHER.get(PASSWORT);
-  if (gespeichert && gespeichert.startsWith('v1:')) {
-    const [, saltB64, hash] = gespeichert.split(':');
-    const probe = await pbkdf2(String(eingabe || ''), vonB64(saltB64));
-    return gleich(probe, hash);
+  const probe = String(eingabe || '');
+  const eintrag = await ladePasswortEintrag(env);
+  if (eintrag) {
+    if (gleich(await pbkdf2(probe, eintrag.salt), eintrag.hash)) return true;
+    if (!eintrag.auchSecret) return false;
   }
   if (!env.ADMIN_PASSWORT) return false;
-  return gleich(String(eingabe || ''), env.ADMIN_PASSWORT);
+  return gleich(probe, env.ADMIN_PASSWORT);
 }
 
 function gleich(a, b) {

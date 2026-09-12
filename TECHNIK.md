@@ -39,7 +39,7 @@ cfg:konten            Ablefy-Konten, Zugangsdaten verschlüsselt (AES-GCM)
 cfg:kurse             Kurse
 cfg:mail              Versanddienst, Token verschlüsselt, Standard-Absender
 cfg:einstellungen     Stand des Einrichtungs-Assistenten
-auth:passwort         PBKDF2-Hash, wenn das Passwort in der Oberfläche geändert wurde
+auth:passwort         PBKDF2-Hash + Secret-Fingerabdruck, wenn das Passwort in der Oberfläche geändert wurde
 sig:<kursId>          Unterschrift als PNG
 sent:<kursId>:<order> Doppelversand-Sperre
 log:<zeit>:<zufall>   Protokoll, Inhalt in den Metadaten, 90 Tage
@@ -102,9 +102,18 @@ Endpunkt würde sonst Wiederholungen bei Ablefy auslösen.
 
 **Passwort.** Solange `auth:passwort` nicht existiert, gilt das Secret
 `ADMIN_PASSWORT`. Ändert der Betreiber das Passwort in der Oberfläche, liegt
-ab dann ein PBKDF2-Hash (SHA-256, 100.000 Runden, eigenes Salt) unter
-`auth:passwort`, und das Secret zählt nicht mehr. Zurücksetzen: den Eintrag
-im KV löschen. Der Hash hängt **nicht** an `DATEN_SCHLUESSEL`.
+ab dann unter `auth:passwort` ein Eintrag `v2:<salt>:<hash>:<fp>` — PBKDF2
+(SHA-256, 100.000 Runden, eigenes Salt) plus ein 16 Zeichen kurzer
+Fingerabdruck des Secrets, das zu dem Zeitpunkt galt. Solange der
+Fingerabdruck zum aktuellen Secret passt, zählt nur der Hash. Wird das
+Secret in Cloudflare neu gesetzt, passt er nicht mehr: dann gilt das Secret,
+und der Eintrag wird beim nächsten Anmeldeversuch gelöscht. Zurücksetzen
+heißt also: Secret neu setzen. Einträge aus 1.1/1.2 (`v1:`, ohne
+Fingerabdruck) akzeptieren Hash **und** Secret, bis das Passwort einmal neu
+gesetzt wird. Der Hash hängt **nicht** an `DATEN_SCHLUESSEL`.
+
+Bei falschem bisherigem Passwort antwortet `einstellungen/passwort` mit 400,
+nicht 401 — 401 bedeutet für die Oberfläche „Sitzung abgelaufen“.
 
 **Absender.** `absenderFuerKurs(mail, kurs)` in `store.js` entscheidet: gilt
 `cfg:mail.standardFuerKurse` und hat der Kurs nicht `eigenerAbsender`, kommt
@@ -206,7 +215,7 @@ Betrieb **nicht** setzen.
 | „Zugangsdaten lassen sich nicht mehr entschlüsseln" | `DATEN_SCHLUESSEL` wurde geändert |
 | Webhook kommt an, nichts passiert | Produkt- oder Quiz-Kennung passen nicht, oder Kurs ist nicht freigegeben |
 | Alles richtig, trotzdem nichts | `npx wrangler tail` mitlaufen lassen und das Quiz noch einmal machen |
-| Passwort weg | `auth:passwort` im KV löschen → `ADMIN_PASSWORT` gilt wieder |
+| Passwort weg | Secret `ADMIN_PASSWORT` neu setzen + Version aktivieren → gilt wieder (alternativ `auth:passwort` im KV löschen) |
 | Konto „Zugangsdaten fehlen" | Nach Import einer Sicherung. Schlüssel ersetzen |
 
 `GET /health` antwortet ohne Anmeldung und eignet sich zur Überwachung.

@@ -30,6 +30,7 @@ import {
   entschluessle,
   speichereUnterschrift,
   ladeProtokoll,
+  protokolliere,
   ladeGesehen,
   ladePuls,
   ladeOffen,
@@ -169,7 +170,7 @@ export async function adminApi(env, request, url) {
       case 'einstellungen/passwort': {
         const alt = String(koerper.altes || '');
         const neu = String(koerper.neues || '');
-        if (!(await passwortStimmt(env, alt))) return fehler('Das bisherige Passwort stimmt nicht.', 401);
+        if (!(await passwortStimmt(env, alt))) return fehler('Das bisherige Passwort stimmt nicht.', 400);
         if (neu.length < 10) return fehler('Das neue Passwort braucht mindestens zehn Zeichen.');
         if (neu === alt) return fehler('Das neue Passwort ist dasselbe wie das alte.');
         await setzePasswort(env, neu);
@@ -499,6 +500,14 @@ export async function adminApi(env, request, url) {
         if (!token) return fehler('Es fehlt eine Bestellnummer.');
         if (koerper.erneut) await loescheSperre(env, kurs.id, token);
         const e = await stelleAus(env, kurs, token, { trocken: false });
+        // Auch was von Hand angestoßen wird, gehört ins Protokoll.
+        await protokolliere(env, {
+          kurs: kurs.id,
+          kursName: kurs.titel || kurs.produktName,
+          order: token,
+          ...e,
+          grund: e.grund || (koerper.erneut ? 'von Hand erneut verschickt' : 'von Hand nachgeholt'),
+        });
         return json({ ok: e.ergebnis.includes('verschickt'), ...e, pdf: undefined });
       }
 

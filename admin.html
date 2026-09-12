@@ -203,7 +203,7 @@ function zeichneLogin() {
       <input id="pw" type="password" autocomplete="current-password" autofocus>
       <div class="reihe"><button class="knopf" data-tu="login">Anmelden</button></div>
     </div>
-    <p class="leise">Passwort vergessen: Im Cloudflare-Konto den Eintrag <code>auth:passwort</code> im KV-Speicher löschen, dann gilt wieder das Passwort aus der Installation. Genau beschrieben in <code>TECHNIK.md</code>.</p>
+    <p class="leise">Passwort vergessen: Im Cloudflare-Konto beim Secret <code>ADMIN_PASSWORT</code> auf <em>Edit → Rotate</em>, neuen Wert eintragen, dann <strong>Deploy</strong> (nicht „Save version“) — ab da gilt dieses Passwort. Genau beschrieben in <code>ANLEITUNG.md</code> unter „Passwort vergessen“.</p>
   </div>`;
 }
 
@@ -677,7 +677,7 @@ function zeichneStart() {
   ${fussHtml()}`;
 }
 
-function protokollTabelle(eintraege) {
+function protokollTabelle(eintraege, mitHinweis = false) {
   if (!eintraege.length) return '<p class="leise">Noch keine Ereignisse. Sobald ein Teilnehmer ein Abschlussquiz beantwortet, steht es hier.</p>';
   const marke = (e) => {
     const t = String(e.ergebnis || '');
@@ -691,9 +691,22 @@ function protokollTabelle(eintraege) {
       <td style="white-space:nowrap">${zeitDe(e.zeit)}</td>
       <td>${esc(e.kursName || '—')}</td>
       <td>${marke(e)}</td>
-      <td>${esc(e.grund || e.an || e.name || '')}</td>
+      <td>${details(e)}</td>
     </tr>`).join('')}
-  </table></div>`;
+  </table></div>
+  ${mitHinweis ? '<p class="leise">„verschickt" heißt: der Versanddienst hat die Mail angenommen. Ob sie angekommen ist, zeigt das Konto beim Versanddienst — bei Resend unter <em>Emails</em>, der Link in der Zeile führt direkt zur Mail.</p>' : ''}`;
+}
+
+/** Details einer Protokollzeile: Empfänger, Grund, Link zur Mail beim Versanddienst. */
+function details(e) {
+  const teile = [];
+  const wer = [e.name, e.an].filter(Boolean).join(' · ');
+  if (wer) teile.push(esc(wer));
+  if (e.grund) teile.push(esc(e.grund));
+  if (e.mailId) {
+    teile.push(`<a href="https://resend.com/emails/${encodeURIComponent(e.mailId)}" target="_blank" rel="noopener">bei Resend öffnen</a>`);
+  }
+  return teile.join('<br>') || '';
 }
 
 /* ---------------- Mailversand ---------------- */
@@ -931,13 +944,12 @@ function zeichneEinstellungen() {
   <div class="karte">
     <h2>Passwort</h2>
     <p class="leise" style="margin-top:-4px">${stand.eigenesPasswort ? 'Es gilt das hier gesetzte Passwort; das aus der Installation ist außer Kraft.' : 'Es gilt das Passwort aus der Installation (ADMIN_PASSWORT).'}</p>
-    <label for="pwalt">Bisheriges Passwort</label><input id="pwalt" type="password" autocomplete="current-password">
-    <div class="zwei">
-      <div><label for="pwneu">Neues Passwort <span class="zusatz">mindestens zehn Zeichen</span></label><input id="pwneu" type="password" autocomplete="new-password"></div>
-      <div><label for="pwneu2">Noch einmal</label><input id="pwneu2" type="password" autocomplete="new-password"></div>
-    </div>
+    <label for="pwalt">Bisheriges Passwort</label><input id="pwalt" type="password" autocomplete="off">
+    <label for="pwneu">Neues Passwort <span class="zusatz">mindestens zehn Zeichen</span></label>
+    <input id="pwneu" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace">
+    <p class="leise" style="margin-top:-4px">Das neue Passwort steht absichtlich sichtbar da: kein Tippfehler, kein Browser-Vorschlag, den du nachher nicht kennst. Danach in den Passwortmanager legen.</p>
     <div class="reihe"><button class="knopf" data-tu="passwort">Passwort ändern</button></div>
-    <div class="hinweis">Passwort vergessen: im Cloudflare-Konto unter <em>Storage &amp; Databases → KV → SPEICHER</em> den Eintrag <code>auth:passwort</code> löschen. Danach gilt wieder das Passwort aus der Installation.</div>
+    <div class="hinweis">Passwort vergessen: im Cloudflare-Konto unter <em>Settings → Variables and Secrets</em> beim Secret <code>ADMIN_PASSWORT</code> auf <em>Edit → Rotate</em>, neuen Wert eintragen, dann <strong>Deploy</strong> — nicht „Save version“, das legt nur eine Version an, die nie live geht. Sobald das Secret ein anderes ist, gilt es wieder; das hier gesetzte Passwort ist damit aufgehoben.</div>
   </div>
 
   <div class="karte">
@@ -1028,7 +1040,7 @@ function zeichneHilfe() {
     <p>Zwei Werte liegen nicht hier, sondern bei Cloudflare unter <em>Workers &amp; Pages → dieses Programm → Settings → Abschnitt „Variables and Secrets“</em> (<strong>ganz oben</strong> auf der Seite — nicht die gleichnamige Liste weit unten unter „Builds“ mit dem Text „No build variables or secrets configured“, die sieht das Programm nie). Beide vom Typ „Secret“, Namen genau so:</p>
     <table>
       <tr><th>Name</th><th>Wozu</th><th>Ändern?</th></tr>
-      <tr><td><code>ADMIN_PASSWORT</code></td><td>Anmeldung hier, solange unter „Einstellungen“ kein eigenes Passwort gesetzt ist.</td><td>Jederzeit. Danach unter <em>Overview → Versions</em> prüfen, dass der blaue Balken auf dem neuesten Eintrag steht; sonst <em>Deployments</em> → oberste Zeile → drei Punkte (…) → <em>Promote version</em>.</td></tr>
+      <tr><td><code>ADMIN_PASSWORT</code></td><td>Anmeldung hier. Ein unter „Einstellungen“ gesetztes Passwort geht vor — bis das Secret neu gesetzt wird, dann gilt wieder das Secret.</td><td>Jederzeit — über <em>Edit → Rotate</em> und dann <strong>Deploy</strong>, nicht „Save version“. Danach unter <em>Overview → Versions</em> prüfen, dass der blaue Balken auf dem neuesten Eintrag steht; sonst <em>Deployments</em> → oberste Zeile → drei Punkte (…) → <em>Promote version</em>.</td></tr>
       <tr><td><code>DATEN_SCHLUESSEL</code></td><td>Verschlüsselt Ablefy-Schlüssel und Mail-Token im Speicher.</td><td><strong>Nie.</strong> Sonst sind alle gespeicherten Zugangsdaten unlesbar und müssen neu eingetragen werden.</td></tr>
     </table>
     <p class="leise">Cloudflare zeigt ein Secret nach dem Speichern nicht mehr an, nur ersetzen geht. Beide Werte deshalb im Passwortmanager aufheben. Fehlt eines, zeigt die Adresse des Programms statt der Anmeldung die Seite „Fast fertig“ mit dem Namen des fehlenden Werts.</p>
@@ -1036,7 +1048,8 @@ function zeichneHilfe() {
 
   <div class="karte">
     <h2>Passwort vergessen</h2>
-    <p>Im Cloudflare-Konto: <em>Storage &amp; Databases → KV</em> → Speicher dieses Programms öffnen → Eintrag <code>auth:passwort</code> löschen. Danach gilt wieder das Passwort aus der Installation (<code>ADMIN_PASSWORT</code>). Ist auch das unbekannt: unter <em>Workers &amp; Pages → dieses Programm → Settings → Variables and Secrets</em> das Secret <code>ADMIN_PASSWORT</code> neu setzen.</p>
+    <p>Im Cloudflare-Konto: <em>Workers &amp; Pages → dieses Programm → Settings → Variables and Secrets</em> (die Liste ganz oben) → Stift-Symbol bei <code>ADMIN_PASSWORT</code> → <em>Rotate</em> → neuen Wert eintragen → <strong>Deploy</strong>. Nicht „Save version“: das legt nur eine Version an, die nie live geht, und der Worker behält das alte Secret. Zur Kontrolle unter <em>Deployments</em>: die oberste Version muss 100 % Traffic haben (sonst drei Punkte → <em>Promote version</em>). Ab da gilt das neue Secret. Ein vorher in der Oberfläche gesetztes Passwort ist damit aufgehoben — das Programm erkennt, dass das Secret ein anderes ist.</p>
+    <p class="leise">Alter Weg, geht weiterhin: unter <em>Storage &amp; Databases → KV</em> den Eintrag <code>auth:passwort</code> löschen.</p>
   </div>
 
   <div class="karte">
@@ -1094,7 +1107,7 @@ function zeichne() {
   else if (seite === 'einstellungen') w.innerHTML = zeichneEinstellungen();
   else if (seite === 'hilfe') w.innerHTML = zeichneHilfe();
   else if (seite === 'protokoll') w.innerHTML = kopfHtml() + '<div class="karte"><h2>Protokoll</h2>'
-    + protokollTabelle(stand.protokoll) + '</div>' + fussHtml();
+    + protokollTabelle(stand.protokoll, true) + '</div>' + fussHtml();
   if (seite === 'kurs') nachKursZeichnen(stand.kurse.find((x) => x.id === offenerKurs));
   if (seite === 'assistent' && SCHRITTE[aSchritt].id === 'kurs' && aKurs()) nachKursZeichnen(aKurs());
   window.scrollTo({ top: 0 });
@@ -1397,10 +1410,11 @@ document.addEventListener('click', async (ev) => {
 
   if (tu === 'passwort') {
     return mitLaden(el, async () => {
-      if ($('#pwneu').value !== $('#pwneu2').value) throw new Error('Die beiden neuen Passwörter sind nicht gleich.');
-      await api('einstellungen/passwort', { altes: $('#pwalt').value, neues: $('#pwneu').value });
+      const neues = $('#pwneu').value;
+      if (neues !== neues.trim()) throw new Error('Das neue Passwort beginnt oder endet mit einem Leerzeichen — bitte entfernen.');
+      await api('einstellungen/passwort', { altes: $('#pwalt').value, neues });
       await ladeStand();
-      meldung = { text: 'Passwort geändert.', art: 'ok' };
+      meldung = { text: 'Passwort geändert. Ab jetzt gilt nur noch dieses — auch das aus der Installation nicht mehr.', art: 'ok' };
     });
   }
   if (tu === 'sicherungdemo') { meldung = { text: 'In der Vorführung wird nichts heruntergeladen.', art: 'warn' }; return zeichne(); }

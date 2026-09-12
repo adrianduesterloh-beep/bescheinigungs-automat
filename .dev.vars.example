@@ -1,10 +1,12 @@
 # Diese zwei Werte fragt Cloudflare bei der Installation über den Link ab.
 # Die Felder sind absichtlich leer — dort die eigenen Werte eintragen.
+# Lokal (wrangler dev) gehören die Werte in eine Datei .dev.vars daneben.
 
-# Passwort für die Bedienoberfläche.
+# Passwort für die Bedienoberfläche. Das braucht der Betreiber jeden Tag.
 ADMIN_PASSWORT=""
 
 # Verschlüsselt Ablefy-Zugangsdaten und Mail-Token im Speicher.
 # Ein langes, ausgedachtes Wort, mindestens 30 Zeichen.
-# Einmal setzen und nie wieder ändern.
+# ⚠️ Einmal setzen und nie wieder ändern — sonst sind alle gespeicherten
+# Zugangsdaten unlesbar und müssen neu eingetragen werden.
 DATEN_SCHLUESSEL=""

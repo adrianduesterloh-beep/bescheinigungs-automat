@@ -4,6 +4,40 @@ Die laufende Version steht in der Oberfläche unten auf jeder Seite und unter
 „Einstellungen“. Wie eine neue Version eingespielt wird, steht in
 `ANLEITUNG.md` unter „Eine neue Version einspielen“.
 
+## 1.2.1 — 2026-09-12
+
+**Passwort: Aussperren ist vorbei.** Bisher konnte ein in der Oberfläche
+gesetztes Passwort dauerhaft aussperren — etwa wenn der Browser ein selbst
+erzeugtes Passwort eingesetzt hatte, das niemand kennt. Jetzt merkt sich
+das Programm, welches Installations-Secret beim Setzen galt. Wird
+`ADMIN_PASSWORT` in Cloudflare neu gesetzt, gilt es sofort wieder; das
+Oberflächen-Passwort ist damit aufgehoben. „Passwort vergessen“ ist damit
+ein Klickweg, den jeder Cloudflare-Nutzer kennt, statt einer Suche im
+KV-Speicher. Passwörter aus 1.1/1.2 gelten weiter — bei denen wird
+zusätzlich das Secret wieder angenommen, bis das Passwort einmal neu gesetzt
+wird.
+
+**Der „Save version“-Fehler ist jetzt in der Anleitung.** Beim Setzen
+eines Secrets bietet Cloudflare „Save version“ und „Deploy“ an. „Save
+version“ legt eine Version an, die nie live geht — das Programm läuft mit
+dem alten Wert weiter, und die Anmeldung schlägt fehl, obwohl das Secret
+scheinbar gesetzt ist. Das war die Ursache der Aussperrungen. Anleitung und
+Hilfe sagen jetzt an jeder Stelle: **Deploy**, nicht „Save version“.
+
+**Falsches altes Passwort wirft nicht mehr raus.** Ein Tippfehler beim
+Passwortwechsel hat die Sitzung beendet, weil der Server dieselbe Antwort
+gab wie bei einer abgelaufenen Sitzung. Jetzt bleibt man angemeldet und
+sieht die Meldung.
+
+**Neues Passwort sichtbar eingeben.** Das Feld zeigt Klartext, hat kein
+Bestätigungsfeld mehr und weist Leerzeichen am Rand ab. So kommt kein
+Tippfehler und kein Browser-Vorschlag durch.
+
+**Protokoll zeigt, wo die Mail ist.** Bei „verschickt“ steht jetzt Name und
+Empfänger, und bei Resend ein Link, der die Mail direkt im Resend-Konto
+öffnet — dort sieht man, ob sie zugestellt wurde. Von Hand nachgeholte und
+erneut verschickte Bescheinigungen erscheinen jetzt ebenfalls im Protokoll.
+
 ## 1.2.0 — 2026-09-04
 
 **Installation ist jetzt ein Link.** Kein ZIP, kein Entpacken, kein

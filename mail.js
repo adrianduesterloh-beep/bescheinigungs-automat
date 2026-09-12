@@ -40,6 +40,7 @@ export function setzeMailBasis({ resend, hostinger } = {}) {
 
 /**
  * @param {{anbieter:string, token:string, mailboxId?:string}} versand
+ * @returns {Promise<{id?:string}>} Kennung beim Versanddienst, wenn er eine liefert.
  * @param {{an:string, betreff:string, html:string, absenderName?:string,
  *          absenderMail?:string, antwortAn?:string,
  *          anhang?:{name:string, bytes:Uint8Array}}} mail
@@ -89,6 +90,10 @@ async function sendeResend(versand, mail) {
     }
     throw new Error(`Mailversand fehlgeschlagen (${res.status}): ${text}`);
   }
+  // Resend antwortet mit {id}. Die Kennung wandert ins Protokoll — damit
+  // findet man die Mail im Resend-Konto unter Emails wieder.
+  const daten = await res.json().catch(() => ({}));
+  return { id: daten?.id ? String(daten.id) : undefined };
 }
 
 async function sendeHostinger(versand, mail) {
@@ -125,6 +130,7 @@ async function sendeHostinger(versand, mail) {
   if (res.status !== 204 && !res.ok) {
     throw new Error(`Mailversand fehlgeschlagen (${res.status}): ${(await res.text()).slice(0, 300)}`);
   }
+  return {};
 }
 
 /* ------------------------------------------------------------------ *
